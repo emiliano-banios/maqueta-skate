@@ -1,66 +1,100 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maqueta Skate Pro v8.0 - Diseñador 3D de Rampas</title>
+    <title>Maqueta Skate Pro v8.1 - Diseñador 3D de Rampas</title>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js & OrbitControls -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fff7ed',
-                            500: '#f97316',
-                            600: '#ea580c',
-                            700: '#c2410c',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Three.js r128 + OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
     <style>
-        /* Personalización de scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-        
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Scrollbar sutil */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        /* Sliders estilizados */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 9999px;
+            background: #1e293b;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f59e0b;
+            cursor: pointer;
+            border: 2px solid #0f172a;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+            transition: transform 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            outline: none;
         }
     </style>
 </head>
-<body class="h-full w-full overflow-hidden font-sans antialiased bg-slate-950 text-slate-100 flex flex-col">
+<body class="bg-slate-950 text-slate-100 h-screen w-screen flex flex-col overflow-hidden">
 
-    <!-- Top Header Navigation Bar -->
-    <header class="h-14 bg-slate-900/90 border-b border-slate-800 px-4 flex items-center justify-between z-20 shrink-0">
-        <div class="flex items-center gap-3">
-            <button id="toggleSidebarBtn" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-500 transition-colors" title="Mostrar/Ocultar Menú Lateral">
-                <i data-lucide="panel-left"></i>
+    <!-- Top Navigation Bar -->
+    <header class="h-14 bg-slate-900/95 border-b border-slate-800 px-3 sm:px-4 flex items-center justify-between z-30 shrink-0 backdrop-blur-md">
+        <div class="flex items-center gap-2.5">
+            <button id="toggleSidebarBtn" onclick="toggleSidebar()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition" title="Mostrar / Ocultar Panel">
+                <i data-lucide="panel-left" class="w-4 h-4"></i>
             </button>
             <div class="flex items-center gap-2">
-                <span class="p-1.5 bg-amber-500/20 text-amber-500 rounded-lg">
-                    <i data-lucide="box" class="w-5 h-5"></i>
-                </span>
-                <h1 class="font-bold text-lg tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                    Maqueta Skate Pro <span class="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono border border-amber-500/30">v8.0</span>
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <i data-lucide="waves" class="w-4 h-4 text-slate-950"></i>
+                </div>
+                <h1 class="font-bold text-sm sm:text-lg tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+                    Maqueta Skate Pro <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono border border-amber-500/30">v8.1</span>
                 </h1>
             </div>
         </div>
 
         <!-- Right Quick Action Tools -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <button onclick="shareDesignLink()" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-medium border border-slate-700 transition" title="Copiar link con estas medidas">
+                <i data-lucide="share-2" class="w-4 h-4 text-sky-400"></i>
+                <span class="hidden md:inline">Compartir</span>
+            </button>
             <button onclick="openModal('svgModal')" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium border border-slate-700 transition">
                 <i data-lucide="ruler" class="w-4 h-4 text-amber-400"></i>
                 <span>Plano SVG</span>
@@ -69,370 +103,401 @@
                 <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i>
                 <span>Presupuesto</span>
             </button>
-            <button onclick="openModal('aiModal')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-semibold text-sm transition shadow-lg shadow-orange-500/20">
+            <button onclick="takeScreenshot()" class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium border border-slate-700 transition" title="Descargar imagen PNG">
+                <i data-lucide="camera" class="w-4 h-4 text-purple-400"></i>
+                <span>PNG</span>
+            </button>
+            <button onclick="openModal('aiModal')" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs sm:text-sm font-bold shadow-lg shadow-amber-500/20 transition">
                 <i data-lucide="sparkles" class="w-4 h-4"></i>
-                <span>Asistente IA</span>
+                <span class="hidden sm:inline">Asistente IA</span>
             </button>
         </div>
     </header>
 
-    <!-- Main Workspace Container -->
+    <!-- Main Workspace -->
     <div class="flex-1 flex relative overflow-hidden">
 
-        <!-- Left Sidebar Controls (Collapsible) -->
-        <aside id="sidebar" class="w-80 md:w-96 bg-slate-900/95 border-r border-slate-800 flex flex-col z-10 transition-all duration-300 transform translate-x-0 shrink-0 absolute md:relative inset-y-0 left-0 h-full">
-            
-            <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <i data-lucide="sliders" class="w-4 h-4 text-amber-400"></i> Configuración Rampa
-                </span>
-                <span id="modeBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-amber-400 border border-slate-700">Miniramp</span>
-            </div>
+        <!-- Collapsible Left Controls Sidebar -->
+        <aside id="sidebar" class="w-80 max-w-[85vw] bg-slate-900/95 border-r border-slate-800 flex flex-col z-20 absolute md:relative inset-y-0 left-0 transform transition-transform duration-300 ease-in-out backdrop-blur-md">
+            <div class="flex-1 overflow-y-auto p-4 space-y-5">
 
-            <div class="flex-1 overflow-y-auto p-4 space-y-6">
+                <!-- Selector de Modo -->
+                <div class="space-y-2">
+                    <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tipo de Rampa</label>
+                    <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800">
+                        <button id="btnModeMiniramp" onclick="setMode('miniramp')" class="py-1.5 px-3 rounded-lg text-xs font-semibold transition bg-amber-500 text-slate-950 shadow">
+                            Miniramp
+                        </button>
+                        <button id="btnModeQuarter" onclick="setMode('quarter')" class="py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
+                            Quarterpipe
+                        </button>
+                    </div>
+                </div>
 
                 <!-- Presets Rápidos -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Presets Rápidos</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="applyPreset('micro')" class="p-2 bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 rounded-lg text-left transition group">
-                            <div class="text-xs font-semibold text-amber-400 group-hover:text-amber-300">Micro Patio</div>
-                            <div class="text-[10px] text-slate-400">45H x 150R x 244W</div>
+                <div class="space-y-2">
+                    <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Presets Rápidos</label>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <button onclick="applyPreset('micro')" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-left transition">
+                            <span class="block text-xs font-semibold text-amber-400">Micro Patio</span>
+                            <span class="text-[10px] text-slate-400">45×150×244 cm</span>
                         </button>
-                        <button onclick="applyPreset('standard')" class="p-2 bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 rounded-lg text-left transition group">
-                            <div class="text-xs font-semibold text-slate-200 group-hover:text-amber-400">Mini Standard</div>
-                            <div class="text-[10px] text-slate-400">90H x 180R x 244W</div>
+                        <button onclick="applyPreset('standard')" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-left transition">
+                            <span class="block text-xs font-semibold text-slate-200">Mini Standard</span>
+                            <span class="text-[10px] text-slate-400">90×185×244 cm</span>
                         </button>
-                        <button onclick="applyPreset('quarter')" class="p-2 bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 rounded-lg text-left transition group">
-                            <div class="text-xs font-semibold text-slate-200 group-hover:text-amber-400">Quarter Jardín</div>
-                            <div class="text-[10px] text-slate-400">45H x 150R (1 lado)</div>
+                        <button onclick="applyPreset('quarter')" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-left transition">
+                            <span class="block text-xs font-semibold text-slate-200">Quarter Jardín</span>
+                            <span class="text-[10px] text-slate-400">75×170×180 cm</span>
                         </button>
-                        <button onclick="applyPreset('halfpipe')" class="p-2 bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 rounded-lg text-left transition group">
-                            <div class="text-xs font-semibold text-slate-200 group-hover:text-amber-400">Halfpipe Pro</div>
-                            <div class="text-[10px] text-slate-400">150H x 210R x 366W</div>
+                        <button onclick="applyPreset('halfpipe')" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-left transition">
+                            <span class="block text-xs font-semibold text-orange-400">Halfpipe Pro</span>
+                            <span class="text-[10px] text-slate-400">150×210×366 cm</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Selector Modo de Rampa -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Tipo de Estructura</label>
-                    <div class="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-lg border border-slate-800">
-                        <button id="btnModeMiniramp" onclick="setMode('miniramp')" class="py-1.5 px-3 rounded-md text-xs font-semibold transition bg-amber-500 text-slate-950 shadow">Miniramp (Simétrica)</button>
-                        <button id="btnModeQuarter" onclick="setMode('quarter')" class="py-1.5 px-3 rounded-md text-xs font-semibold text-slate-400 hover:text-slate-200 transition">Quarterpipe</button>
-                    </div>
-                </div>
-
-                <!-- Sliders Paramétricos -->
-                <div class="space-y-4">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Dimensiones Principales (cm)</label>
+                <!-- Dimensiones Paramétricas -->
+                <div class="space-y-3.5 pt-2 border-t border-slate-800">
+                    <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Dimensiones (cm)</label>
 
                     <!-- Altura H -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs">
-                            <span class="text-slate-300 font-medium">Altura Curva (H)</span>
-                            <span class="font-mono text-amber-400"><input type="number" id="numH" class="w-14 bg-slate-950 border border-slate-700 rounded px-1 text-right text-amber-400 focus:outline-none focus:border-amber-500" value="45"> cm</span>
+                            <span class="text-slate-300">Altura Curva (H)</span>
+                            <span id="valH" class="font-mono font-bold text-amber-400">45 cm</span>
                         </div>
-                        <input type="range" id="slideH" min="30" max="250" value="45" step="1" class="w-full accent-amber-500">
+                        <input id="inputH" type="range" min="30" max="200" step="5" value="45" class="w-full">
                     </div>
 
                     <!-- Radio R -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs">
-                            <span class="text-slate-300 font-medium">Radio Transición (R)</span>
-                            <span class="font-mono text-amber-400"><input type="number" id="numR" class="w-14 bg-slate-950 border border-slate-700 rounded px-1 text-right text-amber-400 focus:outline-none focus:border-amber-500" value="150"> cm</span>
+                            <span class="text-slate-300">Radio Transición (R)</span>
+                            <span id="valR" class="font-mono font-bold text-amber-400">150 cm</span>
                         </div>
-                        <input type="range" id="slideR" min="100" max="350" value="150" step="1" class="w-full accent-amber-500">
+                        <input id="inputR" type="range" min="100" max="300" step="5" value="150" class="w-full">
                     </div>
 
                     <!-- Ancho W -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs">
-                            <span class="text-slate-300 font-medium">Ancho Rampa (W)</span>
-                            <span class="font-mono text-amber-400"><input type="number" id="numW" class="w-16 bg-slate-950 border border-slate-700 rounded px-1 text-right text-amber-400 focus:outline-none focus:border-amber-500" value="244"> cm</span>
+                            <span class="text-slate-300">Ancho Total (W)</span>
+                            <span id="valW" class="font-mono font-bold text-amber-400">244 cm</span>
                         </div>
-                        <input type="range" id="slideW" min="100" max="600" value="244" step="1" class="w-full accent-amber-500">
+                        <input id="inputW" type="range" min="100" max="600" step="2" value="244" class="w-full">
                     </div>
 
-                    <!-- Largo Flat F (Solo en Miniramp) -->
-                    <div id="containerF" class="space-y-1">
+                    <!-- Flat F -->
+                    <div id="containerF" class="space-y-1 transition-opacity">
                         <div class="flex justify-between text-xs">
-                            <span class="text-slate-300 font-medium">Largo de Flat (F)</span>
-                            <span class="font-mono text-amber-400"><input type="number" id="numF" class="w-16 bg-slate-950 border border-slate-700 rounded px-1 text-right text-amber-400 focus:outline-none focus:border-amber-500" value="200"> cm</span>
+                            <span class="text-slate-300">Largo Flat (F)</span>
+                            <span id="valF" class="font-mono font-bold text-amber-400">200 cm</span>
                         </div>
-                        <input type="range" id="slideF" min="100" max="500" value="200" step="1" class="w-full accent-amber-500">
+                        <input id="inputF" type="range" min="100" max="400" step="10" value="200" class="w-full">
                     </div>
 
-                    <!-- Profundidad Deck D -->
+                    <!-- Deck D -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs">
-                            <span class="text-slate-300 font-medium">Profundidad Deck (D)</span>
-                            <span class="font-mono text-amber-400"><input type="number" id="numD" class="w-14 bg-slate-950 border border-slate-700 rounded px-1 text-right text-amber-400 focus:outline-none focus:border-amber-500" value="60"> cm</span>
+                            <span class="text-slate-300">Plataforma Deck (D)</span>
+                            <span id="valD" class="font-mono font-bold text-amber-400">60 cm</span>
                         </div>
-                        <input type="range" id="slideD" min="30" max="150" value="60" step="1" class="w-full accent-amber-500">
+                        <input id="inputD" type="range" min="40" max="150" step="5" value="60" class="w-full">
                     </div>
 
-                    <!-- Zócalo Base B -->
+                    <!-- Base B -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs">
-                            <span class="text-slate-300 font-medium">Zócalo Base (B)</span>
-                            <span class="font-mono text-amber-400"><input type="number" id="numB" class="w-14 bg-slate-950 border border-slate-700 rounded px-1 text-right text-amber-400 focus:outline-none focus:border-amber-500" value="10"> cm</span>
+                            <span class="text-slate-300">Altura Base Flat (B)</span>
+                            <span id="valB" class="font-mono font-bold text-amber-400">10 cm</span>
                         </div>
-                        <input type="range" id="slideB" min="0" max="30" value="10" step="1" class="w-full accent-amber-500">
+                        <input id="inputB" type="range" min="0" max="30" step="2" value="10" class="w-full">
                     </div>
                 </div>
 
-                <!-- Apariencia y Entorno -->
-                <div class="space-y-4 pt-2 border-t border-slate-800">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Acabado y Entorno 3D</label>
-                    
-                    <div class="space-y-2">
-                        <label class="text-xs text-slate-300">Material de Rodadura</label>
-                        <select id="selectMaterial" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-                            <option value="wood">Madera Fenólica / Pino Natural</option>
-                            <option value="retro">Retro 70s (Madera + Franjas Vintage)</option>
-                            <option value="concrete">Concreto Pulido / Park</option>
-                            <option value="blueprint">Blueprint / Plano Técnico Cyan</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-xs text-slate-300">Entorno / Iluminación</label>
-                        <select id="selectEnv" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-                            <option value="studio">Estudio Técnico Oscuro</option>
-                            <option value="sunset">Playa Venice / Atardecer Cálido</option>
-                            <option value="park">Parque Skate Exterior</option>
-                            <option value="night">Noche Spot Urbano</option>
-                            <option value="blueprint">Plano Blueprint Técnico</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Opciones de Estructura / Capas -->
+                <!-- Estilo y Estructura -->
                 <div class="space-y-3 pt-2 border-t border-slate-800">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Visualización de Estructura</label>
-                    
-                    <label class="flex items-center justify-between text-xs text-slate-300 cursor-pointer p-1.5 rounded hover:bg-slate-800/50">
-                        <span class="flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 text-amber-400"></i> Modo Rayos X / Carpintería</span>
-                        <input type="checkbox" id="chkXray" class="w-4 h-4 rounded accent-amber-500">
-                    </label>
+                    <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Visualización</label>
 
-                    <label class="flex items-center justify-between text-xs text-slate-300 cursor-pointer p-1.5 rounded hover:bg-slate-800/50">
-                        <span class="flex items-center gap-2"><i data-lucide="shield" class="w-4 h-4 text-amber-400"></i> Barandas de Seguridad en Decks</span>
-                        <input type="checkbox" id="chkRailings" class="w-4 h-4 rounded accent-amber-500">
-                    </label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block mb-1">Material</span>
+                            <select id="selectMaterial" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+                                <option value="wood">Madera Fenólico</option>
+                                <option value="retro">Retro Skate</option>
+                                <option value="concrete">Concreto</option>
+                                <option value="blueprint">Blueprint Tech</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block mb-1">Entorno</span>
+                            <select id="selectEnv" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+                                <option value="studio">Estudio Oscuro</option>
+                                <option value="sunset">Atardecer</option>
+                                <option value="park">Parque Día</option>
+                                <option value="night">Noche Neón</option>
+                                <option value="blueprint">Plano Azul</option>
+                            </select>
+                        </div>
+                    </div>
 
-                    <label class="flex items-center justify-between text-xs text-slate-300 cursor-pointer p-1.5 rounded hover:bg-slate-800/50">
-                        <span class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-amber-400"></i> Silueta Humana (1,75 m)</span>
-                        <input type="checkbox" id="chkHuman" class="w-4 h-4 rounded accent-amber-500" checked>
-                    </label>
+                    <div class="space-y-2 pt-1">
+                        <label class="flex items-center justify-between text-xs text-slate-300 cursor-pointer bg-slate-950/60 px-3 py-2 rounded-xl border border-slate-800">
+                            <span class="flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5 text-sky-400"></i> Rayos X (Estructura)</span>
+                            <input id="chkXray" type="checkbox" class="accent-amber-500 w-4 h-4 rounded">
+                        </label>
+                        <label class="flex items-center justify-between text-xs text-slate-300 cursor-pointer bg-slate-950/60 px-3 py-2 rounded-xl border border-slate-800">
+                            <span class="flex items-center gap-2"><i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i> Barandas de Seguridad</span>
+                            <input id="chkRailings" type="checkbox" class="accent-amber-500 w-4 h-4 rounded">
+                        </label>
+                        <label class="flex items-center justify-between text-xs text-slate-300 cursor-pointer bg-slate-950/60 px-3 py-2 rounded-xl border border-slate-800">
+                            <span class="flex items-center gap-2"><i data-lucide="user" class="w-3.5 h-3.5 text-emerald-400"></i> Escala Humana (1.75 m)</span>
+                            <input id="chkHuman" type="checkbox" checked class="accent-amber-500 w-4 h-4 rounded">
+                        </label>
+                    </div>
                 </div>
-
-            </div>
-            
-            <!-- Mobile Footer Tools inside Sidebar -->
-            <div class="p-3 bg-slate-950 border-t border-slate-800 sm:hidden grid grid-cols-2 gap-2">
-                <button onclick="openModal('svgModal')" class="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-slate-800 text-slate-200 text-xs font-medium border border-slate-700">
-                    <i data-lucide="ruler" class="w-3.5 h-3.5 text-amber-400"></i> Plano SVG
-                </button>
-                <button onclick="openModal('budgetModal')" class="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-slate-800 text-slate-200 text-xs font-medium border border-slate-700">
-                    <i data-lucide="calculator" class="w-3.5 h-3.5 text-emerald-400"></i> Presupuesto
-                </button>
             </div>
         </aside>
 
-        <!-- 3D Canvas Viewport Container -->
+        <!-- 3D Viewport Area -->
         <main class="flex-1 relative bg-slate-950 overflow-hidden">
-            <div id="canvasContainer" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+            <div id="canvasContainer" class="w-full h-full"></div>
 
-            <!-- Floating Top-Right Viewport Buttons -->
-            <div class="absolute top-4 right-4 flex flex-col gap-2 z-10">
-                <button onclick="resetCamera()" class="p-2.5 rounded-xl glass-panel text-slate-200 hover:text-amber-400 hover:bg-slate-800/90 transition shadow-lg" title="Resetear Cámara">
-                    <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
-                </button>
-                <button onclick="toggleXrayFast()" class="p-2.5 rounded-xl glass-panel text-slate-200 hover:text-amber-400 hover:bg-slate-800/90 transition shadow-lg" title="Alternar Vista Rayos X">
-                    <i data-lucide="layers" class="w-5 h-5"></i>
-                </button>
-                <button onclick="toggleHumanFast()" class="p-2.5 rounded-xl glass-panel text-slate-200 hover:text-amber-400 hover:bg-slate-800/90 transition shadow-lg" title="Alternar Escala Humana">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                </button>
-                <button onclick="takeSnapshot()" class="p-2.5 rounded-xl glass-panel text-slate-200 hover:text-amber-400 hover:bg-slate-800/90 transition shadow-lg" title="Descargar Captura PNG">
-                    <i data-lucide="camera" class="w-5 h-5"></i>
-                </button>
-            </div>
+            <!-- Live Tech Specs HUD (Top Right) -->
+            <div class="absolute top-3 right-3 bg-slate-900/85 backdrop-blur-md border border-slate-800 rounded-2xl p-3 shadow-xl pointer-events-auto max-w-[230px] sm:max-w-xs space-y-2">
+                <div class="flex items-center justify-between gap-3">
+                    <span id="modeBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                        Miniramp
+                    </span>
+                    <button onclick="resetCamera()" class="text-[11px] text-slate-400 hover:text-slate-100 flex items-center gap-1 transition" title="Centrar cámara">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Centrar
+                    </button>
+                </div>
 
-            <!-- Live Specs HUD Overlay (Bottom) -->
-            <div class="absolute bottom-4 left-4 right-4 md:left-auto md:right-4 z-10 pointer-events-none">
-                <div class="pointer-events-auto glass-panel p-3 md:p-4 rounded-2xl max-w-xl ml-auto border border-slate-700/60 shadow-2xl space-y-2">
-                    <div class="flex items-center justify-between border-b border-slate-700/60 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Ficha Técnica en Vivo</span>
-                        </div>
-                        <span id="hudSmoothness" class="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Transición Equilibrada</span>
+                <div class="grid grid-cols-3 gap-2 text-center pt-1">
+                    <div class="bg-slate-950/80 rounded-lg p-1.5 border border-slate-800/80">
+                        <span class="text-[9px] text-slate-400 uppercase block">Largo</span>
+                        <span id="statTotalL" class="font-mono text-xs font-bold text-slate-100">0.00 m</span>
                     </div>
-
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                        <div>
-                            <span class="text-slate-400 block text-[10px] uppercase">Largo Total</span>
-                            <span id="hudTotalLength" class="font-mono font-bold text-slate-100 text-sm">5,34 m</span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block text-[10px] uppercase">Altura Máxima</span>
-                            <span id="hudTotalHeight" class="font-mono font-bold text-slate-100 text-sm">0,55 m</span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block text-[10px] uppercase">Proyección Curva</span>
-                            <span id="hudProj" class="font-mono font-bold text-slate-100 text-sm">1,07 m</span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block text-[10px] uppercase">Ángulo Salida</span>
-                            <span id="hudAngle" class="font-mono font-bold text-amber-400 text-sm">45,6°</span>
-                        </div>
+                    <div class="bg-slate-950/80 rounded-lg p-1.5 border border-slate-800/80">
+                        <span class="text-[9px] text-slate-400 uppercase block">Alto</span>
+                        <span id="statTotalH" class="font-mono text-xs font-bold text-slate-100">0.00 m</span>
                     </div>
-
-                    <!-- Over-Vert Warning Badge -->
-                    <div id="oververtAlert" class="hidden flex items-center gap-2 p-2 rounded-lg bg-red-950/80 border border-red-600/80 text-red-200 text-xs">
-                        <i data-lucide="alert-triangle" class="w-4 h-4 text-red-400 shrink-0"></i>
-                        <span><strong>¡ALERTA OVER-VERT!</strong> La altura supera el radio de transición (Ángulo de salida &gt; 90°). Se genera pared invertida.</span>
+                    <div class="bg-slate-950/80 rounded-lg p-1.5 border border-slate-800/80">
+                        <span class="text-[9px] text-slate-400 uppercase block">Salida</span>
+                        <span id="statAngle" class="font-mono text-xs font-bold text-amber-400">0°</span>
                     </div>
+                </div>
+
+                <div id="overVertWarning" class="hidden text-[10px] text-red-300 bg-red-950/80 border border-red-500/40 rounded-lg px-2 py-1 flex items-center gap-1.5">
+                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-red-400 shrink-0"></i>
+                    <span>Transición muy vertical / Over-Vert</span>
                 </div>
             </div>
 
+            <!-- Mobile Bottom Action Bar -->
+            <div class="sm:hidden absolute bottom-3 inset-x-3 flex items-center justify-center gap-2 z-10">
+                <button onclick="openModal('svgModal')" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-900/95 border border-slate-700 text-xs font-semibold text-slate-100 flex items-center justify-center gap-1.5 shadow-lg backdrop-blur-md">
+                    <i data-lucide="ruler" class="w-4 h-4 text-amber-400"></i> Plano SVG
+                </button>
+                <button onclick="openModal('budgetModal')" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-900/95 border border-slate-700 text-xs font-semibold text-slate-100 flex items-center justify-center gap-1.5 shadow-lg backdrop-blur-md">
+                    <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i> Presupuesto
+                </button>
+            </div>
         </main>
     </div>
 
-    <!-- Modal: Plano de Corte SVG -->
-    <div id="svgModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 border border-amber-500/50 text-slate-100 px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-medium">
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400 shrink-0"></i>
+        <span id="toastMsg">Acción completada</span>
+    </div>
+
+    <!-- Modal: Plano de Corte SVG y Guía DIY -->
+    <div id="svgModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             <div class="p-4 border-b border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i data-lucide="ruler" class="w-5 h-5 text-amber-400"></i>
-                    <h3 class="font-bold text-base text-slate-100">Plano de Corte Lateral (Costilla en Placa 1.22m x 2.44m)</h3>
+                    <h3 class="font-bold text-sm sm:text-base text-slate-100">Plano de Corte Lateral y Guía DIY (Placa 122 × 244 cm)</h3>
                 </div>
-                <button onclick="closeModal('svgModal')" class="p-1 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800">
+                <button onclick="closeModal('svgModal')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            
-            <div class="p-4 flex-1 overflow-auto bg-slate-950 flex flex-col items-center justify-center min-h-[300px]">
-                <div id="svgContainer" class="w-full h-full flex items-center justify-center">
+
+            <div class="p-4 flex-1 overflow-y-auto bg-slate-950 space-y-4">
+                <!-- Alerta de ajuste en placa estándar -->
+                <div id="svgFitAlert" class="hidden flex items-center gap-2 p-3 rounded-xl bg-amber-950/70 border border-amber-500/60 text-amber-200 text-xs">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 shrink-0"></i>
+                    <span id="svgFitAlertText"></span>
+                </div>
+
+                <!-- Resumen rápido DIY -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+                        <span class="text-slate-400 block text-[10px] uppercase">Largo de Arco (9mm)</span>
+                        <span id="diyArcLength" class="font-mono font-bold text-amber-400 text-sm">0 cm</span>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+                        <span class="text-slate-400 block text-[10px] uppercase">Proyección + Deck</span>
+                        <span id="diyTotalX" class="font-mono font-bold text-slate-100 text-sm">0 cm</span>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+                        <span class="text-slate-400 block text-[10px] uppercase">Costillas Totales</span>
+                        <span id="diyRibsCount" class="font-mono font-bold text-slate-100 text-sm">0 u.</span>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+                        <span class="text-slate-400 block text-[10px] uppercase">Tirantes 2×4" (Curva)</span>
+                        <span id="diyJoistsCount" class="font-mono font-bold text-slate-100 text-sm">0 u.</span>
+                    </div>
+                </div>
+
+                <div id="svgContainer" class="w-full flex items-center justify-center bg-slate-900/40 rounded-xl border border-slate-800/80 p-2">
                     <!-- SVG generado dinámicamente -->
+                </div>
+
+                <!-- Tabla de coordenadas cada 20 cm para trazado sin compás -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                            <i data-lucide="crosshair" class="w-4 h-4 text-sky-400"></i>
+                            Guía de Trazado sin Compás (Coordenadas cada 20 cm)
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono">Origen (0,0) = esquina inferior del inicio de curva</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs font-mono text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 text-[10px] uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="p-2">Avance X (cm)</th>
+                                    <th class="p-2">Altura Curva Y (cm)</th>
+                                    <th class="p-2 text-amber-400">Altura desde Suelo (Y + B)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="diyCoordsBody" class="divide-y divide-slate-800/70"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div class="p-4 border-t border-slate-800 bg-slate-900/90 flex flex-wrap items-center justify-between gap-3">
                 <span class="text-xs text-slate-400">
-                    * Grilla de referencia basada en placa estándar de fenólico de <strong>122 cm × 244 cm</strong>.
+                    * Escala 1:1 unificada entre costilla y placa estándar de <strong>122 cm × 244 cm</strong>.
                 </span>
-                <div class="flex items-center gap-2">
-                    <button onclick="downloadSVG()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm flex items-center gap-2 shadow-lg transition">
-                        <i data-lucide="download" class="w-4 h-4"></i> Descargar Archivo SVG
-                    </button>
-                </div>
+                <button onclick="downloadSVG()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm flex items-center gap-2 shadow-lg transition">
+                    <i data-lucide="download" class="w-4 h-4"></i> Descargar Archivo SVG
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Modal: Presupuesto y Materiales -->
-    <div id="budgetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div id="budgetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             <div class="p-4 border-b border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i data-lucide="calculator" class="w-5 h-5 text-emerald-400"></i>
-                    <h3 class="font-bold text-base text-slate-100">Presupuesto Estimado y Lista de Materiales</h3>
+                    <h3 class="font-bold text-sm sm:text-base text-slate-100">Presupuesto y Lista de Materiales</h3>
                 </div>
-                <div class="flex items-center gap-3">
-                    <select id="currencySelect" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-xs text-amber-400 font-mono focus:outline-none">
-                        <option value="ARS">Pesos ($ ARS)</option>
-                        <option value="USD">Dólares ($ USD)</option>
+                <div class="flex items-center gap-2">
+                    <select id="currencySelect" onchange="changeCurrency(this.value)" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+                        <option value="ARS">ARS ($)</option>
+                        <option value="USD">USD (US$)</option>
                     </select>
-                    <button onclick="closeModal('budgetModal')" class="p-1 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800">
+                    <button onclick="closeModal('budgetModal')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="p-4 flex-1 overflow-y-auto space-y-4">
-                <table class="w-full text-left text-xs text-slate-300">
-                    <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
-                        <tr>
-                            <th class="p-2.5">Material</th>
-                            <th class="p-2.5 text-center">Cantidad</th>
-                            <th class="p-2.5 text-right">Precio Unitario</th>
-                            <th class="p-2.5 text-right">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody id="budgetTableBody" class="divide-y divide-slate-800">
-                        <!-- Generado por JS -->
-                    </tbody>
-                </table>
+            <div class="p-4 flex-1 overflow-y-auto space-y-3">
+                <p class="text-xs text-slate-400">
+                    Podés editar cualquier <strong>Precio Unitario</strong> directo en la tabla: se recalcula al instante y queda guardado en tu navegador.
+                </p>
+                <div class="overflow-x-auto rounded-xl border border-slate-800">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th class="p-2.5">Material</th>
+                                <th class="p-2.5 text-center">Cant.</th>
+                                <th class="p-2.5 text-right">Precio Unitario</th>
+                                <th class="p-2.5 text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="budgetTableBody" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center justify-between">
+            <div class="p-4 border-t border-slate-800 bg-slate-950 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <span class="text-xs text-slate-400 block">Total Estimado Materiales</span>
-                    <span id="budgetGrandTotal" class="font-mono font-bold text-xl text-emerald-400">$ 0</span>
+                    <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Total Estimado</span>
+                    <span id="budgetGrandTotal" class="font-mono text-xl font-extrabold text-emerald-400">$ 0</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="copyBudgetToClipboard()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm flex items-center gap-2 border border-slate-700 transition">
-                        <i data-lucide="copy" class="w-4 h-4 text-amber-400"></i> Copiar Lista
-                    </button>
-                </div>
+                <button onclick="copyBudgetToClipboard()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-sm flex items-center gap-2 shadow-lg transition">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copiar Lista
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Asistente IA Gemini -->
-    <div id="aiModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+    <!-- Modal: Asistente IA -->
+    <div id="aiModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
             <div class="p-4 border-b border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
-                    <h3 class="font-bold text-base text-slate-100">Asistente Carpintero IA (Gemini)</h3>
+                    <h3 class="font-bold text-sm sm:text-base text-slate-100">Asistente Carpintero &amp; Skater IA</h3>
                 </div>
-                <button onclick="closeModal('aiModal')" class="p-1 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800">
+                <button onclick="closeModal('aiModal')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
-            <div class="p-4 border-b border-slate-800 bg-slate-950 flex flex-wrap gap-2">
-                <button onclick="askGeminiAI('safety')" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-amber-400 flex items-center gap-2 transition">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i> Analizar Seguridad y Flow
-                </button>
-                <button onclick="askGeminiAI('tricks')" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-orange-400 flex items-center gap-2 transition">
-                    <i data-lucide="zap" class="w-4 h-4"></i> Sugerir Trucos Recomendados
-                </button>
+            <div class="p-4 border-b border-slate-800 bg-slate-950 space-y-3">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="askGeminiAI('safety')" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-amber-400 flex items-center gap-2 transition">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i> Analizar Seguridad y Flow
+                    </button>
+                    <button onclick="askGeminiAI('tricks')" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-orange-400 flex items-center gap-2 transition">
+                        <i data-lucide="zap" class="w-4 h-4"></i> Sugerir Trucos Recomendados
+                    </button>
+                </div>
+                <!-- Campo opcional de API Key para uso en GitHub Pages -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2 border-t border-slate-800/80">
+                    <div class="flex-1 flex items-center gap-2 bg-slate-900 border border-slate-700/80 rounded-lg px-2.5 py-1.5">
+                        <i data-lucide="key-round" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                        <input type="password" id="geminiApiKeyInput" placeholder="API Key de Gemini (opcional, solo necesaria fuera de Canvas)" class="w-full bg-transparent text-xs text-slate-200 placeholder-slate-500 focus:outline-none">
+                    </div>
+                    <button onclick="saveApiKey()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-200 transition shrink-0">
+                        Guardar Clave
+                    </button>
+                </div>
             </div>
 
-            <div class="p-5 flex-1 overflow-y-auto space-y-4 font-sans text-sm text-slate-200 leading-relaxed" id="aiOutput">
-                <div class="text-center text-slate-500 py-8">
-                    <i data-lucide="bot" class="w-12 h-12 mx-auto mb-2 text-slate-600 stroke-[1.5]"></i>
-                    <p>Hacé clic en uno de los botones de arriba para consultar al asistente de IA sobre las medidas actuales de tu rampa.</p>
+            <div class="p-5 flex-1 overflow-y-auto space-y-4 text-sm text-slate-200 leading-relaxed" id="aiOutput">
+                <div class="text-center py-8 text-slate-400 text-xs space-y-2">
+                    <i data-lucide="bot" class="w-8 h-8 mx-auto text-slate-600"></i>
+                    <p>Elegí una opción arriba para analizar la rampa actual con inteligencia artificial.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed top-16 right-4 z-50 hidden transform transition-all duration-300">
-        <div class="glass-panel px-4 py-3 rounded-xl border border-amber-500/40 text-amber-300 text-xs font-medium flex items-center gap-2 shadow-2xl">
-            <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400"></i>
-            <span id="toastMsg">Notificación</span>
-        </div>
-    </div>
-
-    <!-- Application Script Logic -->
     <script>
-        // State Management & Default Options
+        // ==========================================
+        // 1. ESTADO GLOBAL DE LA APLICACIÓN
+        // ==========================================
         const state = {
             mode: 'miniramp', // 'miniramp' | 'quarter'
-            H: 45,            // Height in cm
-            R: 150,           // Radius in cm
-            W: 244,           // Width in cm
-            F: 200,           // Flat length in cm (miniramp only)
-            D: 60,            // Deck depth in cm
-            B: 10,            // Base zócalo height in cm
+            H: 45,            // Altura curva (cm)
+            R: 150,           // Radio transición (cm)
+            W: 244,           // Ancho (cm)
+            F: 200,           // Largo flat (cm)
+            D: 60,            // Profundidad deck (cm)
+            B: 10,            // Altura base del flat (cm)
             material: 'wood', // 'wood' | 'retro' | 'concrete' | 'blueprint'
             env: 'studio',    // 'studio' | 'sunset' | 'park' | 'night' | 'blueprint'
             xray: false,
@@ -440,34 +505,40 @@
             human: true,
             currency: 'ARS',
             prices: {
-                ARS: { p18: 68000, p9: 38000, joist: 7500, coping: 28000, screws: 9500 },
-                USD: { p18: 55, p9: 30, joist: 6.5, coping: 23, screws: 7.5 }
+                ARS: { p18: 48000, p9: 29000, joist: 6500, coping: 42000, screws: 18000 },
+                USD: { p18: 40, p9: 24, joist: 5.5, coping: 35, screws: 15 }
             }
         };
 
-        // Standard Presets Configuration
         const PRESETS = {
-            micro: { mode: 'miniramp', H: 45, R: 150, W: 244, F: 200, D: 60, B: 10 },
-            standard: { mode: 'miniramp', H: 90, R: 180, W: 244, F: 240, D: 80, B: 15 },
-            quarter: { mode: 'quarter', H: 45, R: 150, W: 244, F: 0, D: 60, B: 10 },
-            halfpipe: { mode: 'miniramp', H: 150, R: 210, W: 366, F: 300, D: 100, B: 15 }
+            micro:    { mode: 'miniramp', H: 45,  R: 150, W: 244, F: 200, D: 60,  B: 10 },
+            standard: { mode: 'miniramp', H: 90,  R: 185, W: 244, F: 240, D: 80,  B: 15 },
+            quarter:  { mode: 'quarter',  H: 75,  R: 170, W: 180, F: 200, D: 70,  B: 10 },
+            halfpipe: { mode: 'miniramp', H: 150, R: 210, W: 366, F: 280, D: 100, B: 15 }
         };
 
-        // Three.js Core Variables
-        let scene, camera, renderer, controls;
-        let rampGroup = new THREE.Group();
-        let humanMesh = null;
-        let proceduralTextures = {};
+        // Variables Three.js
+        let scene, camera, renderer, controls, rampGroup, groundMesh, gridHelper;
+        let sidebarOpen = window.innerWidth >= 768;
 
-        // Initialization on Load
+        // ==========================================
+        // 2. INICIALIZACIÓN Y PERSISTENCIA
+        // ==========================================
         window.addEventListener('DOMContentLoaded', () => {
             loadSavedState();
+            const loadedFromURL = loadStateFromURL();
             initLucideIcons();
+            updateSidebarVisibility();
             initThreeJS();
             setupEventListeners();
             applyStateToUI();
+            syncModeUI(state.mode);
+            applyEnvironment();
             rebuild3DModel();
             animate();
+            if (loadedFromURL) {
+                showToast("Diseño cargado desde el enlace compartido.");
+            }
         });
 
         function initLucideIcons() {
@@ -479,10 +550,30 @@
             const msgEl = document.getElementById('toastMsg');
             msgEl.textContent = msg;
             toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3000);
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => toast.classList.add('hidden'), 3000);
         }
 
-        // Local Storage Sync
+        function copyTextToClipboard(text, successMsg) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast(successMsg);
+            } catch (err) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => showToast(successMsg));
+                } else {
+                    showToast("No se pudo copiar automáticamente.");
+                }
+            }
+            document.body.removeChild(textarea);
+        }
+
         function saveState() {
             try {
                 localStorage.setItem('skate_ramp_v8_state', JSON.stringify({
@@ -490,7 +581,7 @@
                     mode: state.mode, material: state.material, env: state.env,
                     prices: state.prices, currency: state.currency
                 }));
-            } catch(e) {}
+            } catch (e) {}
         }
 
         function loadSavedState() {
@@ -498,20 +589,87 @@
                 const saved = localStorage.getItem('skate_ramp_v8_state');
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    Object.assign(state, parsed);
+                    if (parsed.prices) {
+                        state.prices.ARS = Object.assign(state.prices.ARS, parsed.prices.ARS || {});
+                        state.prices.USD = Object.assign(state.prices.USD, parsed.prices.USD || {});
+                    }
+                    ['H', 'R', 'W', 'F', 'D', 'B', 'mode', 'material', 'env', 'currency'].forEach(k => {
+                        if (parsed[k] !== undefined) state[k] = parsed[k];
+                    });
                 }
-            } catch(e) {}
+                const savedKey = localStorage.getItem('skate_ramp_v8_apikey');
+                const keyInput = document.getElementById('geminiApiKeyInput');
+                if (savedKey && keyInput) keyInput.value = savedKey;
+            } catch (e) {}
         }
 
-        // Three.js Engine Setup
+        function loadStateFromURL() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                if (!params.has('H') && !params.has('R') && !params.has('W')) return false;
+
+                ['H', 'R', 'W', 'F', 'D', 'B'].forEach(k => {
+                    if (params.has(k)) {
+                        const v = parseInt(params.get(k), 10);
+                        if (!isNaN(v) && v >= 0) state[k] = v;
+                    }
+                });
+                if (params.get('mode') === 'miniramp' || params.get('mode') === 'quarter') {
+                    state.mode = params.get('mode');
+                }
+                if (['wood', 'retro', 'concrete', 'blueprint'].includes(params.get('mat'))) {
+                    state.material = params.get('mat');
+                }
+                if (['studio', 'sunset', 'park', 'night', 'blueprint'].includes(params.get('env'))) {
+                    state.env = params.get('env');
+                }
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function shareDesignLink() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('mode', state.mode);
+            url.searchParams.set('H', state.H);
+            url.searchParams.set('R', state.R);
+            url.searchParams.set('W', state.W);
+            url.searchParams.set('F', state.F);
+            url.searchParams.set('D', state.D);
+            url.searchParams.set('B', state.B);
+            url.searchParams.set('mat', state.material);
+            url.searchParams.set('env', state.env);
+
+            try {
+                window.history.replaceState({}, '', url.toString());
+            } catch (e) {}
+
+            copyTextToClipboard(url.toString(), "Link del diseño copiado. ¡Mandáselo a tu amigo!");
+        }
+
+        function saveApiKey() {
+            const val = (document.getElementById('geminiApiKeyInput')?.value || '').trim();
+            try {
+                if (val) {
+                    localStorage.setItem('skate_ramp_v8_apikey', val);
+                    showToast("API Key guardada en este navegador.");
+                } else {
+                    localStorage.removeItem('skate_ramp_v8_apikey');
+                    showToast("API Key eliminada.");
+                }
+            } catch (e) {}
+        }
+
+        // ==========================================
+        // 3. MOTOR 3D (THREE.JS + PROCEDURAL TEXTURES)
+        // ==========================================
         function initThreeJS() {
             const container = document.getElementById('canvasContainer');
-            
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0f172a);
 
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-            camera.position.set(6, 4, 7);
+            camera.position.set(4.5, 3.2, 5.2);
 
             renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
@@ -522,495 +680,430 @@
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.maxPolarAngle = Math.PI / 2 + 0.05; // No ir por debajo del suelo
+            controls.dampingFactor = 0.06;
+            controls.maxPolarAngle = Math.PI / 2 - 0.02;
+            controls.minDistance = 1.5;
+            controls.maxDistance = 25;
+            controls.target.set(0, 0.4, 0);
 
-            // Generar texturas procedurales sin dependencias externas
-            initTextures();
+            // Luces
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334155, 0.75);
+            scene.add(hemiLight);
 
-            // Iluminación
-            setupLighting();
+            const dirLight = new THREE.DirectionalLight(0xfff7ed, 0.95);
+            dirLight.position.set(6, 10, 7);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.camera.near = 0.5;
+            dirLight.shadow.camera.far = 30;
+            const d = 8;
+            dirLight.shadow.camera.left = -d;
+            dirLight.shadow.camera.right = d;
+            dirLight.shadow.camera.top = d;
+            dirLight.shadow.camera.bottom = -d;
+            scene.add(dirLight);
 
+            const fillLight = new THREE.DirectionalLight(0x93c5fd, 0.35);
+            fillLight.position.set(-6, 4, -5);
+            scene.add(fillLight);
+
+            // Suelo y grilla
+            const groundGeo = new THREE.PlaneGeometry(40, 40);
+            const groundMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.92, metalness: 0.05 });
+            groundMesh = new THREE.Mesh(groundGeo, groundMat);
+            groundMesh.rotation.x = -Math.PI / 2;
+            groundMesh.receiveShadow = true;
+            scene.add(groundMesh);
+
+            gridHelper = new THREE.GridHelper(30, 30, 0x334155, 0x1e293b);
+            gridHelper.position.y = 0.003;
+            scene.add(gridHelper);
+
+            rampGroup = new THREE.Group();
             scene.add(rampGroup);
 
             window.addEventListener('resize', onWindowResize);
         }
 
-        function setupLighting() {
-            const ambLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambLight);
-
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            dirLight.position.set(10, 15, 8);
-            dirLight.castShadow = true;
-            dirLight.shadow.mapSize.width = 2048;
-            dirLight.shadow.mapSize.height = 2048;
-            dirLight.shadow.bias = -0.0001;
-            scene.add(dirLight);
-
-            const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.3);
-            fillLight.position.set(-10, 8, -8);
-            scene.add(fillLight);
-        }
-
-        // Generador de Texturas Procedurales en Canvas
-        function initTextures() {
-            // 1. Textura Madera Fenólica
-            const cWood = document.createElement('canvas');
-            cWood.width = cWood.height = 512;
-            const ctxW = cWood.getContext('2d');
-            ctxW.fillStyle = '#d4a373';
-            ctxW.fillRect(0, 0, 512, 512);
-            ctxW.strokeStyle = 'rgba(120, 70, 30, 0.12)';
-            ctxW.lineWidth = 2;
-            for (let i = 0; i < 200; i++) {
-                ctxW.beginPath();
-                const y = Math.random() * 512;
-                ctxW.moveTo(0, y);
-                ctxW.bezierCurveTo(170, y + Math.random() * 10 - 5, 340, y + Math.random() * 10 - 5, 512, y);
-                ctxW.stroke();
-            }
-            proceduralTextures.wood = new THREE.CanvasTexture(cWood);
-            proceduralTextures.wood.wrapS = proceduralTextures.wood.wrapT = THREE.RepeatWrapping;
-
-            // 2. Textura Retro 70s
-            const cRetro = document.createElement('canvas');
-            cRetro.width = cRetro.height = 512;
-            const ctxR = cRetro.getContext('2d');
-            ctxR.drawImage(cWood, 0, 0);
-            ctxR.fillStyle = '#ea580c'; ctxR.fillRect(40, 0, 20, 512);
-            ctxR.fillStyle = '#f59e0b'; ctxR.fillRect(65, 0, 15, 512);
-            ctxR.fillStyle = '#ef4444'; ctxR.fillRect(85, 0, 10, 512);
-            proceduralTextures.retro = new THREE.CanvasTexture(cRetro);
-            proceduralTextures.retro.wrapS = proceduralTextures.retro.wrapT = THREE.RepeatWrapping;
-
-            // 3. Textura Concreto
-            const cConc = document.createElement('canvas');
-            cConc.width = cConc.height = 512;
-            const ctxC = cConc.getContext('2d');
-            ctxC.fillStyle = '#94a3b8';
-            ctxC.fillRect(0, 0, 512, 512);
-            for (let i = 0; i < 10000; i++) {
-                ctxC.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
-                ctxC.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
-            }
-            proceduralTextures.concrete = new THREE.CanvasTexture(cConc);
-            proceduralTextures.concrete.wrapS = proceduralTextures.concrete.wrapT = THREE.RepeatWrapping;
-
-            // 4. Textura Blueprint
-            const cBP = document.createElement('canvas');
-            cBP.width = cBP.height = 512;
-            const ctxBP = cBP.getContext('2d');
-            ctxBP.fillStyle = '#0f172a';
-            ctxBP.fillRect(0, 0, 512, 512);
-            ctxBP.strokeStyle = 'rgba(56, 189, 248, 0.25)';
-            ctxBP.lineWidth = 1;
-            for (let x = 0; x <= 512; x += 32) {
-                ctxBP.beginPath(); ctxBP.moveTo(x, 0); ctxBP.lineTo(x, 512); ctxBP.stroke();
-                ctxBP.beginPath(); ctxBP.moveTo(0, x); ctxBP.lineTo(512, x); ctxBP.stroke();
-            }
-            proceduralTextures.blueprint = new THREE.CanvasTexture(cBP);
-            proceduralTextures.blueprint.wrapS = proceduralTextures.blueprint.wrapT = THREE.RepeatWrapping;
-        }
-
-        // Reconstrucción completa del Modelo 3D Paramétrico
-        function rebuild3DModel() {
-            // Limpiar escena previa
-            while (rampGroup.children.length > 0) {
-                const obj = rampGroup.children[0];
-                if (obj.geometry) obj.geometry.dispose();
-                rampGroup.remove(obj);
-            }
-
-            // Conversión de unidades (cm -> m)
-            const h = state.H / 100;
-            const r = state.R / 100;
-            const w = state.W / 100;
-            const f = (state.mode === 'miniramp' ? state.F : 0) / 100;
-            const d = state.D / 100;
-            const b = state.B / 100;
-
-            // Math de transición circular
-            const isOververt = h > r;
-            const hClamped = Math.min(h, r);
-            const projX = Math.sqrt(2 * r * hClamped - hClamped * hClamped);
-            const theta = Math.asin(Math.min(1.0, projX / r));
-
-            // Materiales Three.js
-            let mainTex = proceduralTextures[state.material] || proceduralTextures.wood;
-            mainTex.repeat.set(w > 3 ? 2 : 1, 1);
-
-            const surfaceMat = new THREE.MeshStandardMaterial({
-                map: mainTex,
-                roughness: state.material === 'concrete' ? 0.8 : 0.4,
-                metalness: 0.05,
-                transparent: state.xray,
-                opacity: state.xray ? 0.35 : 1.0,
-                side: THREE.DoubleSide
-            });
-
-            const woodRibMat = new THREE.MeshStandardMaterial({
-                color: 0x92400e,
-                roughness: 0.7,
-                wireframe: state.xray
-            });
-
-            const joistMat = new THREE.MeshStandardMaterial({
-                color: 0xd97706,
-                roughness: 0.6
-            });
-
-            const copingMat = new THREE.MeshStandardMaterial({
-                color: 0xe2e8f0,
-                metalness: 0.9,
-                roughness: 0.2
-            });
-
-            // Construir perfil 2D para extrusión de costillas
-            const shape = new THREE.Shape();
-            shape.moveTo(0, 0);
-            shape.lineTo(0, b);
-
-            const curveSteps = 24;
-            for (let i = 0; i <= curveSteps; i++) {
-                const t = i / curveSteps;
-                const alpha = t * theta;
-                const px = r * Math.sin(alpha);
-                const py = b + r - r * Math.cos(alpha);
-                shape.lineTo(px, py);
-            }
-
-            shape.lineTo(projX + d, b + h);
-            shape.lineTo(projX + d, 0);
-            shape.closePath();
-
-            // Renderizar Costillas (Side & Intermediate Ribs)
-            const numRibs = Math.max(2, Math.ceil(w / 0.70) + 1);
-            const ribThickness = 0.018; // 18mm
-
-            const extrudeSettings = { depth: ribThickness, bevelEnabled: false };
-            const ribGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-
-            function addTransitionSide(offsetX, scaleX, isRightSide) {
-                for (let i = 0; i < numRibs; i++) {
-                    const zPos = -w / 2 + (i / (numRibs - 1)) * (w - ribThickness);
-                    const ribMesh = new THREE.Mesh(ribGeo, woodRibMat);
-                    ribMesh.scale.set(scaleX, 1, 1);
-                    ribMesh.position.set(offsetX, 0, zPos);
-                    ribMesh.castShadow = ribMesh.receiveShadow = true;
-                    rampGroup.add(ribMesh);
-                }
-
-                // Renderizar Tirantes / Travesaños 2x4"
-                const joistStepAngle = Math.PI / 18; // Cada ~20cm en arco
-                const numJoists = Math.floor(theta / joistStepAngle) + 1;
-
-                for (let j = 0; j <= numJoists; j++) {
-                    const alpha = (j / numJoists) * theta;
-                    const jx = offsetX + scaleX * (r * Math.sin(alpha));
-                    const jy = b + r - r * Math.cos(alpha) - 0.04;
-
-                    const joistGeo = new THREE.BoxGeometry(0.05, 0.09, w);
-                    const joistMesh = new THREE.Mesh(joistGeo, joistMat);
-                    joistMesh.position.set(jx, jy, 0);
-                    joistMesh.rotation.z = scaleX * alpha;
-                    joistMesh.castShadow = true;
-                    rampGroup.add(joistMesh);
-                }
-
-                // Caño Coping (Acero 2")
-                const copingGeo = new THREE.CylinderGeometry(0.025, 0.025, w + 0.02, 16);
-                const copingMesh = new THREE.Mesh(copingGeo, copingMat);
-                copingMesh.rotation.x = Math.PI / 2;
-                copingMesh.position.set(offsetX + scaleX * (projX - 0.01), b + h + 0.01, 0);
-                copingMesh.castShadow = true;
-                rampGroup.add(copingMesh);
-
-                // Barandas de Seguridad (Opcionales)
-                if (state.railings) {
-                    const railMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8 });
-                    const railGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.9, 8);
-                    
-                    // Postes traseros
-                    [-w/2 + 0.05, w/2 - 0.05].forEach(z => {
-                        const post = new THREE.Mesh(railGeo, railMat);
-                        post.position.set(offsetX + scaleX * (projX + d - 0.05), b + h + 0.45, z);
-                        rampGroup.add(post);
-                    });
-                    
-                    // Pasamanos horizontal
-                    const handrailGeo = new THREE.CylinderGeometry(0.015, 0.015, w, 8);
-                    const handrail = new THREE.Mesh(handrailGeo, railMat);
-                    handrail.rotation.x = Math.PI / 2;
-                    handrail.position.set(offsetX + scaleX * (projX + d - 0.05), b + h + 0.9, 0);
-                    rampGroup.add(handrail);
-                }
-            }
-
-            if (state.mode === 'miniramp') {
-                // Lado Izquierdo
-                addTransitionSide(-f / 2, -1, false);
-                // Lado Derecho
-                addTransitionSide(f / 2, 1, true);
-
-                // Base del Flat (estructura bajo el piso plano)
-                if (f > 0 && b > 0) {
-                    const flatBaseGeo = new THREE.BoxGeometry(f, b, w);
-                    const flatBaseMesh = new THREE.Mesh(flatBaseGeo, woodRibMat);
-                    flatBaseMesh.position.set(0, b / 2, 0);
-                    flatBaseMesh.receiveShadow = flatBaseMesh.castShadow = true;
-                    rampGroup.add(flatBaseMesh);
-                }
-
-                // Superficie continua de rodadura (Deck Izq -> Curva Izq -> Flat -> Curva Der -> Deck Der)
-                const points = [];
-                points.push(new THREE.Vector2(-(f / 2 + projX + d), b + h));
-                for (let i = curveSteps; i >= 0; i--) {
-                    const alpha = (i / curveSteps) * theta;
-                    points.push(new THREE.Vector2(-(f / 2 + r * Math.sin(alpha)), b + r - r * Math.cos(alpha)));
-                }
-                for (let i = 0; i <= curveSteps; i++) {
-                    const alpha = (i / curveSteps) * theta;
-                    points.push(new THREE.Vector2(f / 2 + r * Math.sin(alpha), b + r - r * Math.cos(alpha)));
-                }
-                points.push(new THREE.Vector2(f / 2 + projX + d, b + h));
-
-                const surfGeo = new THREE.BufferGeometry();
-                const vertices = [];
-                const uvs = [];
-
-                for (let i = 0; i < points.length; i++) {
-                    const p = points[i];
-                    const u = i / (points.length - 1);
-                    vertices.push(p.x, p.y, -w / 2);
-                    vertices.push(p.x, p.y, w / 2);
-                    uvs.push(u, 0, u, 1);
-                }
-
-                const indices = [];
-                for (let i = 0; i < points.length - 1; i++) {
-                    const base = i * 2;
-                    indices.push(base, base + 1, base + 2);
-                    indices.push(base + 1, base + 3, base + 2);
-                }
-
-                surfGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-                surfGeo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-                surfGeo.setIndex(indices);
-                surfGeo.computeVertexNormals();
-
-                const surfMesh = new THREE.Mesh(surfGeo, surfaceMat);
-                surfMesh.receiveShadow = surfMesh.castShadow = true;
-                rampGroup.add(surfMesh);
-
-            } else {
-                // Modo Quarterpipe Individual
-                addTransitionSide(0, 1, true);
-
-                const points = [];
-                for (let i = 0; i <= curveSteps; i++) {
-                    const alpha = (i / curveSteps) * theta;
-                    points.push(new THREE.Vector2(r * Math.sin(alpha), b + r - r * Math.cos(alpha)));
-                }
-                points.push(new THREE.Vector2(projX + d, b + h));
-
-                const surfGeo = new THREE.BufferGeometry();
-                const vertices = [];
-                const uvs = [];
-
-                for (let i = 0; i < points.length; i++) {
-                    const p = points[i];
-                    const u = i / (points.length - 1);
-                    vertices.push(p.x, p.y, -w / 2);
-                    vertices.push(p.x, p.y, w / 2);
-                    uvs.push(u, 0, u, 1);
-                }
-
-                const indices = [];
-                for (let i = 0; i < points.length - 1; i++) {
-                    const base = i * 2;
-                    indices.push(base, base + 1, base + 2);
-                    indices.push(base + 1, base + 3, base + 2);
-                }
-
-                surfGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-                surfGeo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-                surfGeo.setIndex(indices);
-                surfGeo.computeVertexNormals();
-
-                const surfMesh = new THREE.Mesh(surfGeo, surfaceMat);
-                surfMesh.receiveShadow = surfMesh.castShadow = true;
-                rampGroup.add(surfMesh);
-            }
-
-            // Suelo de referencia
-            updateGroundGrid(state.env);
-
-            // Escala humana
-            updateHumanSilhouette();
-
-            // Actualizar Métricas Ficha Técnica
-            updateHUDMetrics(projX, theta, isOververt);
-        }
-
-        // Suelo y Entorno
-        function updateGroundGrid(envType) {
-            let existingGround = scene.getObjectByName('groundGrid');
-            if (existingGround) scene.remove(existingGround);
-
-            if (envType === 'blueprint') {
-                scene.background = new THREE.Color(0x0a192f);
-                const grid = new THREE.GridHelper(30, 30, 0x38bdf8, 0x1e293b);
-                grid.name = 'groundGrid';
-                grid.position.y = -0.01;
-                scene.add(grid);
-            } else if (envType === 'sunset') {
-                scene.background = new THREE.Color(0x2a1015);
-                const grid = new THREE.GridHelper(30, 30, 0xf97316, 0x451a03);
-                grid.name = 'groundGrid';
-                grid.position.y = -0.01;
-                scene.add(grid);
-            } else if (envType === 'night') {
-                scene.background = new THREE.Color(0x050814);
-                const grid = new THREE.GridHelper(30, 30, 0x6366f1, 0x1e1b4b);
-                grid.name = 'groundGrid';
-                grid.position.y = -0.01;
-                scene.add(grid);
-            } else {
-                scene.background = new THREE.Color(0x0f172a);
-                const grid = new THREE.GridHelper(30, 30, 0x475569, 0x1e293b);
-                grid.name = 'groundGrid';
-                grid.position.y = -0.01;
-                scene.add(grid);
-            }
-        }
-
-        // Silueta Humana de Referencia (1.75 m)
-        function updateHumanSilhouette() {
-            if (humanMesh) {
-                scene.remove(humanMesh);
-                humanMesh = null;
-            }
-
-            if (!state.human) return;
-
-            humanMesh = new THREE.Group();
-
-            // Cuerpo Humano Estilizado
-            const matHuman = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.3 });
-            
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), matHuman);
-            head.position.y = 1.63;
-            humanMesh.add(head);
-
-            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.10, 0.75, 16), matHuman);
-            body.position.y = 1.15;
-            humanMesh.add(body);
-
-            const legs = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.08, 0.75, 16), matHuman);
-            legs.position.y = 0.40;
-            humanMesh.add(legs);
-
-            // Skateboard
-            const boardMat = new THREE.MeshStandardMaterial({ color: 0xea580c });
-            const board = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.02, 0.80), boardMat);
-            board.position.set(0, 0.02, 0);
-            humanMesh.add(board);
-
-            // Posicionar a un lado de la rampa en el suelo
-            const xPos = state.mode === 'miniramp' ? 0 : -0.8;
-            const zPos = state.W / 200 + 0.6;
-            humanMesh.position.set(xPos, 0, zPos);
-
-            scene.add(humanMesh);
-        }
-
-        // Actualizar HUD Ficha Técnica
-        function updateHUDMetrics(projX, theta, isOververt) {
-            const h = state.H / 100;
-            const r = state.R / 100;
-            const w = state.W / 100;
-            const f = (state.mode === 'miniramp' ? state.F : 0) / 100;
-            const d = state.D / 100;
-
-            const totalLength = state.mode === 'miniramp' ? (2 * (projX + d) + f) : (projX + d);
-            const totalHeight = (state.H + state.B) / 100;
-            const angleDeg = (theta * (180 / Math.PI)).toFixed(1);
-
-            document.getElementById('hudTotalLength').textContent = `${totalLength.toFixed(2)} m`;
-            document.getElementById('hudTotalHeight').textContent = `${totalHeight.toFixed(2)} m`;
-            document.getElementById('hudProj').textContent = `${projX.toFixed(2)} m`;
-            document.getElementById('hudAngle').textContent = `${angleDeg}°`;
-
-            // Diagnóstico de Suavidad
-            const ratio = state.R / state.H;
-            const smoothnessBadge = document.getElementById('hudSmoothness');
-            
-            if (isOververt) {
-                smoothnessBadge.textContent = "⚠️ Over-Vert (Agresiva)";
-                smoothnessBadge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30";
-            } else if (ratio >= 3.0) {
-                smoothnessBadge.textContent = "Super Suave / Mellow";
-                smoothnessBadge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-            } else if (ratio >= 2.0) {
-                smoothnessBadge.textContent = "Transición Equilibrada";
-                smoothnessBadge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30";
-            } else {
-                smoothnessBadge.textContent = "Transición Rápida / Pro";
-                smoothnessBadge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-orange-500/20 text-orange-300 border border-orange-500/30";
-            }
-
-            const alertEl = document.getElementById('oververtAlert');
-            if (isOververt) alertEl.classList.remove('hidden');
-            else alertEl.classList.add('hidden');
-        }
-
-        // Render Loop
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        }
-
         function onWindowResize() {
             const container = document.getElementById('canvasContainer');
+            if (!container || !renderer || !camera) return;
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
         }
 
-        // UI Event Listeners & Controls Sync
+        function resetCamera() {
+            const totalW = state.W / 100;
+            const dist = Math.max(4.5, totalW * 1.4 + 2.5);
+            camera.position.set(dist * 0.75, dist * 0.52, dist * 0.85);
+            controls.target.set(0, (state.H + state.B) / 220, 0);
+            controls.update();
+        }
+
+        function createProceduralTexture(type) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            if (type === 'wood') {
+                ctx.fillStyle = '#c89b6e';
+                ctx.fillRect(0, 0, 512, 512);
+                for (let i = 0; i < 120; i++) {
+                    ctx.strokeStyle = i % 2 === 0 ? 'rgba(139, 90, 43, 0.16)' : 'rgba(245, 222, 179, 0.12)';
+                    ctx.lineWidth = Math.random() * 4 + 1;
+                    ctx.beginPath();
+                    const y = Math.random() * 512;
+                    ctx.moveTo(0, y);
+                    ctx.bezierCurveTo(170, y + (Math.random() - 0.5) * 14, 340, y + (Math.random() - 0.5) * 14, 512, y);
+                    ctx.stroke();
+                }
+                // Uniones de placas
+                ctx.strokeStyle = 'rgba(60, 35, 15, 0.25)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(1, 1, 510, 254);
+                ctx.strokeRect(1, 256, 510, 254);
+            } else if (type === 'retro') {
+                ctx.fillStyle = '#e7c89b';
+                ctx.fillRect(0, 0, 512, 512);
+                // Franjas retro skate 80s
+                const stripes = ['#ea580c', '#f59e0b', '#0ea5e9'];
+                stripes.forEach((col, i) => {
+                    ctx.fillStyle = col;
+                    ctx.fillRect(0, 190 + i * 26, 512, 20);
+                });
+            } else if (type === 'concrete') {
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillRect(0, 0, 512, 512);
+                for (let i = 0; i < 3000; i++) {
+                    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)';
+                    ctx.fillRect(Math.random() * 512, Math.random() * 512, 3, 3);
+                }
+            } else {
+                // Blueprint
+                ctx.fillStyle = '#0c4a6e';
+                ctx.fillRect(0, 0, 512, 512);
+                ctx.strokeStyle = 'rgba(125, 211, 252, 0.35)';
+                ctx.lineWidth = 1;
+                for (let p = 0; p <= 512; p += 32) {
+                    ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, 512); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(512, p); ctx.stroke();
+                }
+            }
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(2, 2);
+            return tex;
+        }
+
+        function applyEnvironment() {
+            const envs = {
+                studio:    { bg: 0x090d16, ground: 0x0f172a, grid1: 0x334155, grid2: 0x1e293b },
+                sunset:    { bg: 0x2a1829, ground: 0x1f1726, grid1: 0x7c2d12, grid2: 0x431407 },
+                park:      { bg: 0x7dd3fc, ground: 0x3f6212, grid1: 0x4d7c0f, grid2: 0x365314 },
+                night:     { bg: 0x020617, ground: 0x090d16, grid1: 0x0284c7, grid2: 0x1e1b4b },
+                blueprint: { bg: 0x082f49, ground: 0x0c4a6e, grid1: 0x38bdf8, grid2: 0x0369a1 }
+            };
+            const cfg = envs[state.env] || envs.studio;
+            scene.background = new THREE.Color(cfg.bg);
+            scene.fog = new THREE.Fog(cfg.bg, 14, 34);
+            groundMesh.material.color.setHex(cfg.ground);
+
+            scene.remove(gridHelper);
+            gridHelper = new THREE.GridHelper(30, 30, cfg.grid1, cfg.grid2);
+            gridHelper.position.y = 0.003;
+            scene.add(gridHelper);
+        }
+
+        function clearGroup(group) {
+            while (group.children.length > 0) {
+                const obj = group.children[0];
+                group.remove(obj);
+                if (obj.geometry) obj.geometry.dispose();
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+                    else obj.material.dispose();
+                }
+            }
+        }
+
+        // Construcción completa del modelo 3D (Superficie, Costillas, Tirantes, Coping, Barandas y Skater)
+        function rebuild3DModel() {
+            clearGroup(rampGroup);
+
+            const H = state.H / 100;
+            const R = state.R / 100;
+            const W = state.W / 100;
+            const F = (state.mode === 'miniramp' ? state.F : 0) / 100;
+            const D = state.D / 100;
+            const B = state.B / 100;
+
+            const hClamped = Math.min(H, R);
+            const projX = Math.sqrt(Math.max(0.0001, 2 * R * hClamped - hClamped * hClamped));
+            const theta = Math.asin(Math.min(1.0, projX / R));
+            const exitAngleDeg = theta * (180 / Math.PI);
+
+            const totalL = state.mode === 'miniramp'
+                ? (F + 2 * projX + 2 * D)
+                : (projX + D);
+            const totalH = H + B;
+
+            // Actualizar HUD técnico
+            document.getElementById('statTotalL').textContent = `${totalL.toFixed(2)} m`;
+            document.getElementById('statTotalH').textContent = `${totalH.toFixed(2)} m`;
+            document.getElementById('statAngle').textContent = `${exitAngleDeg.toFixed(1)}°`;
+            const warnEl = document.getElementById('overVertWarning');
+            if (H > R || exitAngleDeg >= 85) warnEl.classList.remove('hidden');
+            else warnEl.classList.add('hidden');
+
+            // Materiales
+            const surfTex = createProceduralTexture(state.material);
+            const surfaceMat = new THREE.MeshStandardMaterial({
+                map: surfTex,
+                roughness: state.material === 'concrete' ? 0.85 : 0.65,
+                metalness: state.material === 'blueprint' ? 0.15 : 0.05,
+                side: THREE.DoubleSide,
+                transparent: state.xray,
+                opacity: state.xray ? 0.28 : 1.0
+            });
+
+            const ribMat = new THREE.MeshStandardMaterial({
+                color: state.material === 'blueprint' ? 0x38bdf8 : 0x926239,
+                roughness: 0.8
+            });
+
+            const joistMat = new THREE.MeshStandardMaterial({
+                color: state.material === 'blueprint' ? 0x7dd3fc : 0xd6a76c,
+                roughness: 0.85
+            });
+
+            const copingMat = new THREE.MeshStandardMaterial({
+                color: 0xe2e8f0,
+                metalness: 0.85,
+                roughness: 0.2
+            });
+
+            const railMat = new THREE.MeshStandardMaterial({
+                color: 0x334155,
+                metalness: 0.6,
+                roughness: 0.35
+            });
+
+            const curveSteps = 24;
+            const halfW = W / 2;
+
+            // Función auxiliar para crear un módulo lateral (Quarter) orientado hacia +X o -X
+            function buildTransitionModule(dir, startX) {
+                // Perfil 2D para extrudir costillas
+                const shape = new THREE.Shape();
+                shape.moveTo(0, 0);
+                shape.lineTo(0, B);
+                for (let i = 0; i <= curveSteps; i++) {
+                    const a = (i / curveSteps) * theta;
+                    const lx = R * Math.sin(a);
+                    const ly = B + (R - R * Math.cos(a));
+                    shape.lineTo(lx, ly);
+                }
+                shape.lineTo(projX + D, totalH);
+                shape.lineTo(projX + D, 0);
+                shape.closePath();
+
+                // Costillas internas espaciadas cada ~70 cm
+                const numRibs = Math.max(2, Math.ceil(state.W / 70) + 1);
+                const ribThickness = 0.018;
+                const ribGeo = new THREE.ExtrudeGeometry(shape, { depth: ribThickness, bevelEnabled: false });
+
+                for (let r = 0; r < numRibs; r++) {
+                    const zPos = -halfW + (r / (numRibs - 1)) * (W - ribThickness);
+                    const ribMesh = new THREE.Mesh(ribGeo, ribMat);
+                    ribMesh.castShadow = true;
+                    ribMesh.receiveShadow = true;
+                    if (dir === 1) {
+                        ribMesh.position.set(startX, 0, zPos);
+                    } else {
+                        ribMesh.scale.x = -1;
+                        ribMesh.position.set(startX, 0, zPos);
+                    }
+                    rampGroup.add(ribMesh);
+                }
+
+                // Tirantes 2x4" siguiendo la curva
+                const joistCount = Math.max(4, Math.floor((R * theta) / 0.22));
+                const joistGeo = new THREE.BoxGeometry(0.045, 0.09, W - 0.02);
+                for (let j = 1; j <= joistCount; j++) {
+                    const a = (j / (joistCount + 1)) * theta;
+                    const lx = R * Math.sin(a) + Math.sin(a) * 0.05;
+                    const ly = B + (R - R * Math.cos(a)) - Math.cos(a) * 0.05;
+                    const joist = new THREE.Mesh(joistGeo, joistMat);
+                    joist.position.set(startX + dir * lx, Math.max(0.05, ly), 0);
+                    joist.rotation.z = dir * a;
+                    rampGroup.add(joist);
+                }
+
+                // Superficie curva de rodadura
+                const surfGeo = new THREE.BufferGeometry();
+                const vertices = [];
+                const uvs = [];
+                const indices = [];
+
+                for (let i = 0; i <= curveSteps; i++) {
+                    const t = i / curveSteps;
+                    const a = t * theta;
+                    const x = startX + dir * (R * Math.sin(a));
+                    const y = B + (R - R * Math.cos(a)) + 0.005;
+
+                    vertices.push(x, y, -halfW);
+                    vertices.push(x, y, halfW);
+                    uvs.push(t * 2, 0);
+                    uvs.push(t * 2, W);
+
+                    if (i < curveSteps) {
+                        const row = i * 2;
+                        if (dir === 1) {
+                            indices.push(row, row + 1, row + 2);
+                            indices.push(row + 1, row + 3, row + 2);
+                        } else {
+                            indices.push(row, row + 2, row + 1);
+                            indices.push(row + 1, row + 2, row + 3);
+                        }
+                    }
+                }
+                surfGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                surfGeo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+                surfGeo.setIndex(indices);
+                surfGeo.computeVertexNormals();
+
+                const curveMesh = new THREE.Mesh(surfGeo, surfaceMat);
+                curveMesh.castShadow = true;
+                curveMesh.receiveShadow = true;
+                rampGroup.add(curveMesh);
+
+                // Plataforma del Deck
+                const deckGeo = new THREE.BoxGeometry(D, 0.025, W);
+                const deckMesh = new THREE.Mesh(deckGeo, surfaceMat);
+                deckMesh.position.set(startX + dir * (projX + D / 2), totalH - 0.012, 0);
+                deckMesh.castShadow = true;
+                deckMesh.receiveShadow = true;
+                rampGroup.add(deckMesh);
+
+                // Caño metálico de Coping 2" (diámetro ~5 cm)
+                const copingGeo = new THREE.CylinderGeometry(0.025, 0.025, W + 0.02, 20);
+                copingGeo.rotateX(Math.PI / 2);
+                const copingMesh = new THREE.Mesh(copingGeo, copingMat);
+                copingMesh.position.set(startX + dir * projX, totalH + 0.008, 0);
+                copingMesh.castShadow = true;
+                rampGroup.add(copingMesh);
+
+                // Barandas opcionales
+                if (state.railings) {
+                    const railH = 0.95;
+                    const backX = startX + dir * (projX + D - 0.03);
+                    const postGeo = new THREE.CylinderGeometry(0.02, 0.02, railH, 10);
+                    const posts = 3;
+                    for (let p = 0; p < posts; p++) {
+                        const pz = -halfW + 0.05 + (p / (posts - 1)) * (W - 0.1);
+                        const post = new THREE.Mesh(postGeo, railMat);
+                        post.position.set(backX, totalH + railH / 2, pz);
+                        rampGroup.add(post);
+                    }
+                    const topBarGeo = new THREE.CylinderGeometry(0.022, 0.022, W, 12);
+                    topBarGeo.rotateX(Math.PI / 2);
+                    const topBar = new THREE.Mesh(topBarGeo, railMat);
+                    topBar.position.set(backX, totalH + railH, 0);
+                    rampGroup.add(topBar);
+
+                    const midBar = new THREE.Mesh(topBarGeo, railMat);
+                    midBar.position.set(backX, totalH + railH * 0.55, 0);
+                    rampGroup.add(midBar);
+                }
+            }
+
+            if (state.mode === 'miniramp') {
+                const halfF = F / 2;
+                buildTransitionModule(1, halfF);
+                buildTransitionModule(-1, -halfF);
+
+                // Superficie del Flat
+                const flatGeo = new THREE.BoxGeometry(F + 0.02, Math.max(0.02, B), W);
+                const flatMesh = new THREE.Mesh(flatGeo, surfaceMat);
+                flatMesh.position.set(0, Math.max(0.01, B / 2), 0);
+                flatMesh.receiveShadow = true;
+                flatMesh.castShadow = true;
+                rampGroup.add(flatMesh);
+            } else {
+                // Quarterpipe centrado en X
+                buildTransitionModule(1, -totalL / 2);
+            }
+
+            // Figura humana de referencia (1.75 m) con skate
+            if (state.human) {
+                const humanGroup = new THREE.Group();
+                const bodyMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.6 });
+                const headMat = new THREE.MeshStandardMaterial({ color: 0xfde68a, roughness: 0.6 });
+                const boardMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.5 });
+
+                // Tabla de skate
+                const deck = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.015, 0.21), boardMat);
+                deck.position.y = 0.06;
+                humanGroup.add(deck);
+
+                // Piernas
+                const legGeo = new THREE.CylinderGeometry(0.055, 0.045, 0.82, 10);
+                const legL = new THREE.Mesh(legGeo, bodyMat);
+                legL.position.set(-0.14, 0.48, 0);
+                const legR = new THREE.Mesh(legGeo, bodyMat);
+                legR.position.set(0.14, 0.48, 0);
+                humanGroup.add(legL, legR);
+
+                // Torso
+                const torso = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.58, 0.2), bodyMat);
+                torso.position.y = 1.18;
+                humanGroup.add(torso);
+
+                // Cabeza
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.115, 16, 16), headMat);
+                head.position.y = 1.63;
+                humanGroup.add(head);
+
+                if (state.mode === 'miniramp') {
+                    humanGroup.position.set(0, B, 0);
+                } else {
+                    humanGroup.position.set(-totalL / 2 - 0.8, 0, 0);
+                }
+                rampGroup.add(humanGroup);
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (controls) controls.update();
+            if (renderer && scene && camera) renderer.render(scene, camera);
+        }
+
+        // ==========================================
+        // 4. EVENTOS DE UI Y CONTROLES
+        // ==========================================
         function setupEventListeners() {
-            // Sidebar Toggle for Mobile
-            document.getElementById('toggleSidebarBtn').addEventListener('click', () => {
-                const sidebar = document.getElementById('sidebar');
-                sidebar.classList.toggle('-translate-x-full');
-            });
-
-            // Sliders & Inputs
-            const params = ['H', 'R', 'W', 'F', 'D', 'B'];
-            params.forEach(p => {
-                const slider = document.getElementById(`slide${p}`);
-                const num = document.getElementById(`num${p}`);
-
-                slider.addEventListener('input', (e) => {
-                    const val = parseInt(e.target.value);
-                    state[p] = val;
-                    num.value = val;
+            const bindSlider = (id, key, labelId) => {
+                const el = document.getElementById(id);
+                el.addEventListener('input', (e) => {
+                    state[key] = parseInt(e.target.value, 10);
+                    document.getElementById(labelId).textContent = `${state[key]} cm`;
                     onParamChange();
                 });
+            };
 
-                num.addEventListener('change', (e) => {
-                    let val = parseInt(e.target.value);
-                    val = Math.max(parseInt(slider.min), Math.min(parseInt(slider.max), val));
-                    state[p] = val;
-                    slider.value = val;
-                    num.value = val;
-                    onParamChange();
-                });
-            });
+            bindSlider('inputH', 'H', 'valH');
+            bindSlider('inputR', 'R', 'valR');
+            bindSlider('inputW', 'W', 'valW');
+            bindSlider('inputF', 'F', 'valF');
+            bindSlider('inputD', 'D', 'valD');
+            bindSlider('inputB', 'B', 'valB');
 
-            // Checkboxes & Selects
             document.getElementById('selectMaterial').addEventListener('change', (e) => {
                 state.material = e.target.value;
                 onParamChange();
@@ -1018,27 +1111,23 @@
 
             document.getElementById('selectEnv').addEventListener('change', (e) => {
                 state.env = e.target.value;
-                onParamChange();
+                applyEnvironment();
+                saveState();
             });
 
             document.getElementById('chkXray').addEventListener('change', (e) => {
                 state.xray = e.target.checked;
-                onParamChange();
+                rebuild3DModel();
             });
 
             document.getElementById('chkRailings').addEventListener('change', (e) => {
                 state.railings = e.target.checked;
-                onParamChange();
+                rebuild3DModel();
             });
 
             document.getElementById('chkHuman').addEventListener('change', (e) => {
                 state.human = e.target.checked;
-                onParamChange();
-            });
-
-            document.getElementById('currencySelect').addEventListener('change', (e) => {
-                state.currency = e.target.value;
-                renderBudgetTable();
+                rebuild3DModel();
             });
         }
 
@@ -1047,25 +1136,43 @@
             rebuild3DModel();
         }
 
-        function setMode(mode) {
-            state.mode = mode;
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            updateSidebarVisibility();
+            setTimeout(onWindowResize, 320);
+        }
+
+        function updateSidebarVisibility() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebarOpen) {
+                sidebar.classList.remove('-translate-x-full', 'md:hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full', 'md:hidden');
+            }
+        }
+
+        function syncModeUI(mode) {
             const btnMini = document.getElementById('btnModeMiniramp');
             const btnQ = document.getElementById('btnModeQuarter');
             const containerF = document.getElementById('containerF');
             const badge = document.getElementById('modeBadge');
 
             if (mode === 'miniramp') {
-                btnMini.className = "py-1.5 px-3 rounded-md text-xs font-semibold transition bg-amber-500 text-slate-950 shadow";
-                btnQ.className = "py-1.5 px-3 rounded-md text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
+                btnMini.className = "py-1.5 px-3 rounded-lg text-xs font-semibold transition bg-amber-500 text-slate-950 shadow";
+                btnQ.className = "py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
                 containerF.classList.remove('opacity-40', 'pointer-events-none');
                 badge.textContent = "Miniramp";
             } else {
-                btnQ.className = "py-1.5 px-3 rounded-md text-xs font-semibold transition bg-amber-500 text-slate-950 shadow";
-                btnMini.className = "py-1.5 px-3 rounded-md text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
+                btnQ.className = "py-1.5 px-3 rounded-lg text-xs font-semibold transition bg-amber-500 text-slate-950 shadow";
+                btnMini.className = "py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition";
                 containerF.classList.add('opacity-40', 'pointer-events-none');
                 badge.textContent = "Quarterpipe";
             }
+        }
 
+        function setMode(mode) {
+            state.mode = mode;
+            syncModeUI(mode);
             onParamChange();
         }
 
@@ -1074,52 +1181,25 @@
             if (!p) return;
             Object.assign(state, p);
             applyStateToUI();
-            setMode(p.mode);
-            showToast(`Preset "${presetKey.toUpperCase()}" aplicado.`);
+            syncModeUI(state.mode);
+            onParamChange();
+            resetCamera();
+            showToast(`Preset "${presetKey}" aplicado.`);
         }
 
         function applyStateToUI() {
-            ['H', 'R', 'W', 'F', 'D', 'B'].forEach(key => {
-                document.getElementById(`slide${key}`).value = state[key];
-                document.getElementById(`num${key}`).value = state[key];
+            ['H', 'R', 'W', 'F', 'D', 'B'].forEach(k => {
+                document.getElementById(`input${k}`).value = state[k];
+                document.getElementById(`val${k}`).textContent = `${state[k]} cm`;
             });
             document.getElementById('selectMaterial').value = state.material;
             document.getElementById('selectEnv').value = state.env;
             document.getElementById('chkXray').checked = state.xray;
             document.getElementById('chkRailings').checked = state.railings;
             document.getElementById('chkHuman').checked = state.human;
+            document.getElementById('currencySelect').value = state.currency;
         }
 
-        // Top Quick Controls
-        function resetCamera() {
-            camera.position.set(6, 4, 7);
-            controls.target.set(0, 0, 0);
-            controls.update();
-        }
-
-        function toggleXrayFast() {
-            state.xray = !state.xray;
-            document.getElementById('chkXray').checked = state.xray;
-            onParamChange();
-        }
-
-        function toggleHumanFast() {
-            state.human = !state.human;
-            document.getElementById('chkHuman').checked = state.human;
-            onParamChange();
-        }
-
-        function takeSnapshot() {
-            renderer.render(scene, camera);
-            const dataUrl = renderer.domElement.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.download = `maqueta-skate-v8-${Date.now()}.png`;
-            link.href = dataUrl;
-            link.click();
-            showToast("Captura PNG descargada correctamente.");
-        }
-
-        // Modals Management
         function openModal(id) {
             document.getElementById(id).classList.remove('hidden');
             if (id === 'svgModal') renderSVGPlan();
@@ -1131,187 +1211,287 @@
             document.getElementById(id).classList.add('hidden');
         }
 
-        // Generación de Plano de Corte SVG
+        function takeScreenshot() {
+            renderer.render(scene, camera);
+            const dataURL = renderer.domElement.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = dataURL;
+            a.download = `maqueta-skate-${state.mode}-${state.H}x${state.R}.png`;
+            a.click();
+            showToast("Captura PNG descargada.");
+        }
+
+        // ==========================================
+        // 5. PLANO DE CORTE SVG 1:1 + GUÍA DIY
+        // ==========================================
         function renderSVGPlan() {
             const container = document.getElementById('svgContainer');
-            
+            const fitAlert = document.getElementById('svgFitAlert');
+            const fitAlertText = document.getElementById('svgFitAlertText');
+            const coordsBody = document.getElementById('diyCoordsBody');
+
             const H = state.H;
             const R = state.R;
             const D = state.D;
             const B = state.B;
+            const W = state.W;
 
             const hClamped = Math.min(H, R);
-            const projX = Math.sqrt(2 * R * hClamped - hClamped * hClamped);
+            const projX = Math.sqrt(Math.max(0.01, 2 * R * hClamped - hClamped * hClamped));
             const theta = Math.asin(Math.min(1.0, projX / R));
             const exitAngleDeg = (theta * (180 / Math.PI)).toFixed(1);
+            const arcLengthCm = R * theta;
+            const totalX = projX + D;
+            const totalY = H + B;
 
-            // Escala y margen para SVG
+            const sides = state.mode === 'miniramp' ? 2 : 1;
+            const numRibs = Math.max(2, Math.ceil(W / 70) + 1) * sides;
+            const joistsPerCurve = Math.max(4, Math.floor((arcLengthCm) / 22));
+
+            document.getElementById('diyArcLength').textContent = `${arcLengthCm.toFixed(1)} cm`;
+            document.getElementById('diyTotalX').textContent = `${totalX.toFixed(1)} cm`;
+            document.getElementById('diyRibsCount').textContent = `${numRibs} u.`;
+            document.getElementById('diyJoistsCount').textContent = `${joistsPerCurve * sides} u.`;
+
             const boardW = 244;
             const boardH = 122;
-            const viewBoxW = 280;
-            const viewBoxH = 150;
+            const exceedsX = totalX > boardW;
+            const exceedsY = totalY > boardH;
 
-            const scale = Math.min(220 / (projX + D + 20), 110 / (H + B + 20));
+            if (exceedsX || exceedsY) {
+                const reasons = [];
+                if (exceedsX) reasons.push(`largo total (${totalX.toFixed(1)} cm > 244 cm)`);
+                if (exceedsY) reasons.push(`altura total (${totalY.toFixed(1)} cm > 122 cm)`);
+                fitAlertText.innerHTML = `<strong>Atención:</strong> la costilla supera una placa estándar de 122 × 244 cm en ${reasons.join(' y ')}. Vas a necesitar unir dos placas o dividir el deck.`;
+                fitAlert.classList.remove('hidden');
+            } else {
+                fitAlert.classList.add('hidden');
+            }
 
-            // Puntos perfil
-            const ox = 30;
-            const oy = 130;
+            // Escala unificada 1:1 en unidades cm
+            const maxX = Math.max(boardW, totalX) + 48;
+            const maxY = Math.max(boardH, totalY) + 45;
+            const ox = 18;
+            const oy = maxY - 22;
 
-            let pathD = `M ${ox} ${oy} L ${ox} ${oy - B * scale}`;
-            
-            const steps = 30;
+            let pathD = `M ${ox} ${oy} L ${ox} ${oy - B}`;
+            const steps = 36;
             for (let i = 0; i <= steps; i++) {
                 const t = i / steps;
                 const alpha = t * theta;
-                const px = ox + (R * Math.sin(alpha)) * scale;
-                const py = (oy - B * scale) - (R - R * Math.cos(alpha)) * scale;
-                pathD += ` L ${px} ${py}`;
+                const px = ox + R * Math.sin(alpha);
+                const py = (oy - B) - (R - R * Math.cos(alpha));
+                pathD += ` L ${px.toFixed(2)} ${py.toFixed(2)}`;
             }
 
-            const topX = ox + projX * scale;
-            const topY = oy - (H + B) * scale;
-            const deckEndX = topX + D * scale;
+            const topX = ox + projX;
+            const topY = oy - totalY;
+            const deckEndX = ox + totalX;
+            pathD += ` L ${deckEndX.toFixed(2)} ${topY.toFixed(2)} L ${deckEndX.toFixed(2)} ${oy} Z`;
 
-            pathD += ` L ${deckEndX} ${topY} L ${deckEndX} ${oy} Z`;
+            const boardTopY = oy - boardH;
+            const strokeColor = (exceedsX || exceedsY) ? '#ef4444' : '#f97316';
 
-            const svg = `
-                <svg id="cutSvg" viewBox="0 0 ${viewBoxW} ${viewBoxH}" class="w-full h-auto max-h-[500px]">
+            container.innerHTML = `
+                <svg id="cutSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${maxX} ${maxY}" class="w-full h-auto max-h-[360px]">
                     <defs>
-                        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(56,189,248,0.12)" stroke-width="0.5"/>
+                        <pattern id="grid20" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(56,189,248,0.16)" stroke-width="0.6"/>
                         </pattern>
                     </defs>
-                    <rect width="${viewBoxW}" height="${viewBoxH}" fill="#090d16" />
-                    <rect x="20" y="15" width="${boardW * 0.9}" height="${boardH * 0.9}" fill="url(#grid)" stroke="#0284c7" stroke-width="1" stroke-dasharray="4,4" />
-                    
-                    <text x="25" y="27" fill="#38bdf8" font-size="6" font-family="monospace">PLACA DE FENÓLICO 122 x 244 cm</text>
+                    <rect width="${maxX}" height="${maxY}" fill="#090d16" />
 
-                    <!-- Profile Fill & Outline -->
-                    <path d="${pathD}" fill="rgba(249, 115, 22, 0.25)" stroke="#f97316" stroke-width="1.8" />
+                    <!-- Placa estándar 244 x 122 cm a escala 1:1 -->
+                    <rect x="${ox}" y="${boardTopY}" width="${boardW}" height="${boardH}" fill="url(#grid20)" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="5,4" />
+                    <text x="${ox + 4}" y="${boardTopY + 9}" fill="#38bdf8" font-size="6.8" font-family="monospace">PLACA ESTÁNDAR 244 × 122 cm (grilla = 20 cm)</text>
 
-                    <!-- Dimension Lines -->
-                    <line x1="${ox}" y1="${oy + 6}" x2="${deckEndX}" y2="${oy + 6}" stroke="#94a3b8" stroke-width="0.8" />
-                    <text x="${(ox + deckEndX)/2}" y="${oy + 12}" fill="#cbd5e1" font-size="5" text-anchor="middle" font-family="monospace">Proyección Total: ${(projX + D).toFixed(1)} cm</text>
+                    <!-- Perfil de la costilla a escala 1:1 -->
+                    <path d="${pathD}" fill="rgba(249, 115, 22, 0.22)" stroke="${strokeColor}" stroke-width="1.8" />
 
-                    <line x1="${deckEndX + 6}" y1="${oy}" x2="${deckEndX + 6}" y2="${topY}" stroke="#94a3b8" stroke-width="0.8" />
-                    <text x="${deckEndX + 10}" y="${(oy + topY)/2}" fill="#cbd5e1" font-size="5" text-anchor="start" font-family="monospace">H + B = ${H + B} cm</text>
+                    <!-- Cota Horizontal -->
+                    <line x1="${ox}" y1="${oy + 8}" x2="${deckEndX}" y2="${oy + 8}" stroke="#94a3b8" stroke-width="0.9" />
+                    <text x="${(ox + deckEndX) / 2}" y="${oy + 16}" fill="#cbd5e1" font-size="6.5" text-anchor="middle" font-family="monospace">Largo Costilla: ${totalX.toFixed(1)} cm (Curva ${projX.toFixed(1)} + Deck ${D})</text>
 
-                    <!-- Annotations -->
-                    <circle cx="${ox + R*scale}" cy="${oy - B*scale - R*scale}" r="2" fill="#ef4444" />
-                    <text x="${ox + R*scale + 4}" y="${oy - B*scale - R*scale + 2}" fill="#ef4444" font-size="5" font-family="monospace">Centro Radio (R=${R}cm)</text>
+                    <!-- Cota Vertical -->
+                    <line x1="${deckEndX + 6}" y1="${oy}" x2="${deckEndX + 6}" y2="${topY}" stroke="#94a3b8" stroke-width="0.9" />
+                    <text x="${deckEndX + 10}" y="${(oy + topY) / 2 + 2}" fill="#cbd5e1" font-size="6.5" text-anchor="start" font-family="monospace">${totalY} cm</text>
 
-                    <text x="${topX - 10}" y="${topY - 5}" fill="#f59e0b" font-size="5" font-weight="bold" font-family="monospace">Salida: ${exitAngleDeg}°</text>
+                    <!-- Punto de Coping -->
+                    <circle cx="${topX}" cy="${topY}" r="2.2" fill="#f59e0b" />
+                    <text x="${topX - 4}" y="${topY - 5}" fill="#f59e0b" font-size="6.5" font-weight="bold" text-anchor="end" font-family="monospace">Salida ${exitAngleDeg}° | Arco ${arcLengthCm.toFixed(1)} cm</text>
                 </svg>
             `;
 
-            container.innerHTML = svg;
+            // Tabla de coordenadas cada 20 cm
+            coordsBody.innerHTML = '';
+            const xPoints = [];
+            for (let x = 0; x < projX; x += 20) xPoints.push(x);
+            if (xPoints.length === 0 || Math.abs(xPoints[xPoints.length - 1] - projX) > 0.5) {
+                xPoints.push(projX);
+            }
+
+            xPoints.forEach((xVal, idx) => {
+                const yCurve = R - Math.sqrt(Math.max(0, R * R - xVal * xVal));
+                const yGround = yCurve + B;
+                const isLast = idx === xPoints.length - 1;
+                const tr = document.createElement('tr');
+                tr.className = isLast ? 'bg-amber-500/10 font-semibold' : 'hover:bg-slate-800/40';
+                tr.innerHTML = `
+                    <td class="p-2">${xVal.toFixed(1)} cm ${isLast ? '<span class="text-[10px] text-amber-400">(Coping)</span>' : ''}</td>
+                    <td class="p-2">${yCurve.toFixed(1)} cm</td>
+                    <td class="p-2 text-amber-400">${yGround.toFixed(1)} cm</td>
+                `;
+                coordsBody.appendChild(tr);
+            });
+
+            initLucideIcons();
         }
 
         function downloadSVG() {
             const svgEl = document.getElementById('cutSvg');
             if (!svgEl) return;
-            const svgData = new XMLSerializer().serializeToString(svgEl);
-            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const blob = new Blob([svgEl.outerHTML], { type: 'image/svg+xml;charset=utf-8' });
             const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `plano-costilla-skate-${state.H}H-${state.R}R.svg`;
-            link.click();
-            showToast("Archivo SVG descargado.");
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `plano-costilla-${state.H}x${state.R}cm.svg`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast("Plano SVG descargado.");
         }
 
-        // Cálculo de Presupuesto y Materiales
-        function renderBudgetTable() {
-            const body = document.getElementById('budgetTableBody');
-            const totalEl = document.getElementById('budgetGrandTotal');
+        // ==========================================
+        // 6. PRESUPUESTO EDITABLE Y MATERIALES
+        // ==========================================
+        function changeCurrency(curr) {
+            state.currency = curr;
+            saveState();
+            renderBudgetTable();
+        }
 
+        function getBudgetItems() {
             const H = state.H / 100;
             const R = state.R / 100;
             const W = state.W / 100;
             const F = (state.mode === 'miniramp' ? state.F : 0) / 100;
             const D = state.D / 100;
             const B = state.B / 100;
+            const sides = state.mode === 'miniramp' ? 2 : 1;
 
             const curr = state.currency;
             const p = state.prices[curr];
 
             const hClamped = Math.min(H, R);
-            const projX = Math.sqrt(2 * R * hClamped - hClamped * hClamped);
+            const projX = Math.sqrt(Math.max(0.0001, 2 * R * hClamped - hClamped * hClamped));
             const theta = Math.asin(Math.min(1.0, projX / R));
             const arcLength = R * theta;
 
             // 1. Placas Fenólico 18mm (Costillas + Decks)
-            const numRibs = (Math.ceil(state.W / 70) + 1) * (state.mode === 'miniramp' ? 2 : 1);
-            const ribArea = (projX + D) * (H + B) * 0.65; // Factor forma aproximado
+            const numRibs = (Math.ceil(state.W / 70) + 1) * sides;
+            const ribArea = (projX + D) * (H + B) * 0.65;
             const totalRibArea = ribArea * numRibs;
-            const deckArea = D * W * (state.mode === 'miniramp' ? 2 : 1);
-            const sheets18 = Math.ceil(((totalRibArea + deckArea) * 1.15) / (1.22 * 2.44));
+            const deckArea = D * W * sides;
+            const sheets18 = Math.max(1, Math.ceil(((totalRibArea + deckArea) * 1.15) / (1.22 * 2.44)));
 
             // 2. Placas Fenólico 9mm (Doble capa de rodadura)
-            const curveArea = arcLength * W * (state.mode === 'miniramp' ? 2 : 1);
+            const curveArea = arcLength * W * sides;
             const flatArea = F * W;
             const totalRidingArea = curveArea + flatArea;
-            const sheets9 = Math.ceil((totalRidingArea * 2 * 1.1) / (1.22 * 2.44));
+            const sheets9 = Math.max(1, Math.ceil((totalRidingArea * 2 * 1.1) / (1.22 * 2.44)));
 
-            // 3. Tirantes de Madera 2x4" (2.44m)
+            // 3. Tirantes de Madera 2x4" (2.44 m)
             const joistsPerCurve = Math.ceil((arcLength * 100) / 20);
-            const totalJoistsCount = (joistsPerCurve * (state.mode === 'miniramp' ? 2 : 1)) + Math.ceil((F * 100) / 20) + 6;
+            const totalJoistsCount = (joistsPerCurve * sides) + Math.ceil((F * 100) / 20) + (3 * sides);
             const totalJoistMeters = totalJoistsCount * W;
-            const joists2x4 = Math.ceil(totalJoistMeters / 2.44);
+            const joists2x4 = Math.max(2, Math.ceil(totalJoistMeters / 2.44));
 
-            // 4. Caño de Coping 2"
-            const copingPipes = state.mode === 'miniramp' ? 2 : 1;
+            // 4. Caño de Coping 2" (barras estándar de 6 m según ancho real)
+            const totalCopingMeters = W * sides;
+            const copingBars6m = Math.max(1, Math.ceil(totalCopingMeters / 6));
 
             // 5. Cajas de Tornillos T2
             const screwBoxes = Math.max(1, Math.ceil(totalRidingArea / 5));
 
-            const items = [
-                { name: 'Placas Fenólico 18 mm (1.22 x 2.44 m)', qty: sheets18, price: p.p18 },
-                { name: 'Placas Fenólico 9 mm (Doble Capa Rodadura)', qty: sheets9, price: p.p9 },
-                { name: 'Tirantes Madera 2"x4" (Largo 2.44 m)', qty: joists2x4, price: p.joist },
-                { name: 'Caño de Hierro 2" Coping (Tramos)', qty: copingPipes, price: p.coping },
-                { name: 'Caja Tornillos Autofrenantes T2 (x 500u)', qty: screwBoxes, price: p.screws },
+            return [
+                { key: 'p18', name: 'Placas Fenólico 18 mm (1.22 × 2.44 m)', qty: sheets18, price: p.p18 },
+                { key: 'p9', name: 'Placas Fenólico 9 mm (Doble Capa Rodadura)', qty: sheets9, price: p.p9 },
+                { key: 'joist', name: 'Tirantes Madera 2"×4" (Largo 2.44 m)', qty: joists2x4, price: p.joist },
+                { key: 'coping', name: `Caño Hierro 2" Coping (Barras 6 m — ${totalCopingMeters.toFixed(2)} m totales)`, qty: copingBars6m, price: p.coping },
+                { key: 'screws', name: 'Caja Tornillos Autofrenantes T2 (× 500 u.)', qty: screwBoxes, price: p.screws }
             ];
+        }
 
-            let grandTotal = 0;
+        function renderBudgetTable() {
+            const body = document.getElementById('budgetTableBody');
+            const curr = state.currency;
+            const sym = curr === 'ARS' ? '$' : 'US$';
+            const items = getBudgetItems();
+
             body.innerHTML = '';
 
             items.forEach(item => {
                 const sub = item.qty * item.price;
-                grandTotal += sub;
-
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800/40 transition";
                 tr.innerHTML = `
                     <td class="p-2.5 font-medium text-slate-200">${item.name}</td>
                     <td class="p-2.5 text-center font-mono text-amber-400 font-bold">${item.qty}</td>
-                    <td class="p-2.5 text-right font-mono text-slate-400">${curr === 'ARS' ? '$' : 'USD'} ${item.price.toLocaleString()}</td>
-                    <td class="p-2.5 text-right font-mono font-bold text-slate-100">${curr === 'ARS' ? '$' : 'USD'} ${sub.toLocaleString()}</td>
+                    <td class="p-2.5 text-right font-mono">
+                        <div class="inline-flex items-center gap-1 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 focus-within:border-amber-500">
+                            <span class="text-slate-500 text-[10px]">${sym}</span>
+                            <input type="number" min="0" step="${curr === 'ARS' ? '100' : '0.5'}" value="${item.price}"
+                                oninput="updateItemPrice('${item.key}', this.value, ${item.qty})"
+                                class="w-20 bg-transparent text-right text-slate-100 focus:outline-none">
+                        </div>
+                    </td>
+                    <td id="sub_${item.key}" class="p-2.5 text-right font-mono font-bold text-slate-100">${sym} ${sub.toLocaleString()}</td>
                 `;
                 body.appendChild(tr);
             });
 
-            totalEl.textContent = `${curr === 'ARS' ? '$' : 'USD'} ${grandTotal.toLocaleString()}`;
+            recalcGrandTotal();
+        }
+
+        function updateItemPrice(key, rawValue, qty) {
+            const val = Math.max(0, parseFloat(rawValue) || 0);
+            const curr = state.currency;
+            const sym = curr === 'ARS' ? '$' : 'US$';
+            state.prices[curr][key] = val;
+            saveState();
+
+            const subEl = document.getElementById(`sub_${key}`);
+            if (subEl) subEl.textContent = `${sym} ${(qty * val).toLocaleString()}`;
+            recalcGrandTotal();
+        }
+
+        function recalcGrandTotal() {
+            const curr = state.currency;
+            const sym = curr === 'ARS' ? '$' : 'US$';
+            const items = getBudgetItems();
+            const grandTotal = items.reduce((acc, item) => acc + item.qty * item.price, 0);
+            document.getElementById('budgetGrandTotal').textContent = `${sym} ${grandTotal.toLocaleString()}`;
         }
 
         function copyBudgetToClipboard() {
-            const h = state.H; const r = state.R; const w = state.W;
+            const items = getBudgetItems();
+            const curr = state.currency;
+            const sym = curr === 'ARS' ? '$' : 'US$';
             let text = `📋 PRESUPUESTO RAMPA DE SKATE (${state.mode.toUpperCase()})\n`;
-            text += `Medidas: ${h}cm Altura | ${r}cm Radio | ${w}cm Ancho\n`;
+            text += `Medidas: ${state.H}cm Alto | ${state.R}cm Radio | ${state.W}cm Ancho${state.mode === 'miniramp' ? ` | ${state.F}cm Flat` : ''}\n`;
             text += `----------------------------------------\n`;
-            
-            const rows = document.querySelectorAll('#budgetTableBody tr');
-            rows.forEach(r => {
-                const cols = r.querySelectorAll('td');
-                text += `${cols[0].textContent} x${cols[1].textContent} = ${cols[3].textContent}\n`;
+
+            items.forEach(item => {
+                text += `${item.name} ×${item.qty} = ${sym} ${(item.qty * item.price).toLocaleString()}\n`;
             });
             text += `----------------------------------------\n`;
             text += `TOTAL ESTIMADO: ${document.getElementById('budgetGrandTotal').textContent}\n`;
 
-            navigator.clipboard.writeText(text).then(() => showToast("Presupuesto copiado al portapapeles."));
+            copyTextToClipboard(text, "Presupuesto copiado al portapapeles.");
         }
 
-        // Asistente Gemini IA (gemini-3-flash-preview)
+        // ==========================================
+        // 7. ASISTENTE IA (GEMINI 3 FLASH PREVIEW)
+        // ==========================================
         async function askGeminiAI(type) {
             const out = document.getElementById('aiOutput');
             out.innerHTML = `
@@ -1322,7 +1502,7 @@
             `;
             initLucideIcons();
 
-            const promptType = type === 'safety' 
+            const promptType = type === 'safety'
                 ? `Analizá la seguridad, velocidad de transición y flow de esta rampa de skate:`
                 : `Sugerí una lista progresiva de trucos recomendados para practicar en esta rampa:`;
 
@@ -1336,36 +1516,50 @@
 
 Respondé en español rioplatense conciso, técnico y entusiasta, con recomendaciones de carpintería y consejos prácticos.`;
 
-            const apiKey = "";
+            const savedKey = (document.getElementById('geminiApiKeyInput')?.value || localStorage.getItem('skate_ramp_v8_apikey') || '').trim();
+            const apiKey = savedKey || "";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
 
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userPrompt }] }],
-                        systemInstruction: {
-                            parts: [{ text: "Sos un maestro carpintero de skateparks y skater experimentado. Da respuestas formateadas limpiamente en párrafos cortos y viñetas." }]
-                        }
-                    })
-                });
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: {
+                    parts: [{ text: "Sos un maestro carpintero de skateparks y skater experimentado. Da respuestas formateadas limpiamente en párrafos cortos y viñetas." }]
+                }
+            };
 
-                const data = await response.json();
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "No se obtuvo respuesta del modelo.";
+            const delays = [1000, 2000, 4000];
+            for (let attempt = 0; attempt <= delays.length; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
 
-                out.innerHTML = `
-                    <div class="prose prose-invert max-w-none text-xs leading-relaxed space-y-3">
-                        ${text.replace(/\n/g, '<br>')}
-                    </div>
-                `;
-            } catch (err) {
-                out.innerHTML = `
-                    <div class="p-4 rounded-xl bg-red-950/50 border border-red-700/50 text-red-200 text-xs">
-                        ⚠️ Error al conectar con el asistente de IA. Verificá tu conexión a internet o la API Key.
-                    </div>
-                `;
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                    const data = await response.json();
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "No se obtuvo respuesta del modelo.";
+
+                    out.innerHTML = `
+                        <div class="text-xs sm:text-sm leading-relaxed space-y-2 text-slate-200">
+                            ${text.replace(/\n/g, '<br>')}
+                        </div>
+                    `;
+                    return;
+                } catch (err) {
+                    if (attempt < delays.length) {
+                        await new Promise(res => setTimeout(res, delays[attempt]));
+                    }
+                }
             }
+
+            out.innerHTML = `
+                <div class="p-4 rounded-xl bg-red-950/50 border border-red-700/50 text-red-200 text-xs space-y-1">
+                    <p>⚠️ No se pudo conectar con el asistente de IA.</p>
+                    <p class="text-slate-400">Si estás usando la app desde GitHub Pages o en local, pegá arriba tu API Key gratuita de Google AI Studio y tocá <strong>Guardar Clave</strong>.</p>
+                </div>
+            `;
         }
     </script>
 </body>
