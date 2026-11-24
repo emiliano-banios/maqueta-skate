@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maqueta Skate Pro v8.3 - Diseñador 3D de Rampas</title>
+    <title>Maqueta Skate Pro v8.4 - Diseñador 3D de Rampas</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -84,7 +84,7 @@
                     <i data-lucide="waves" class="w-4 h-4 text-slate-950"></i>
                 </div>
                 <h1 class="font-bold text-sm sm:text-lg tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                    Maqueta Skate Pro <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono border border-amber-500/30">v8.3</span>
+                    Maqueta Skate Pro <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono border border-amber-500/30">v8.4</span>
                 </h1>
             </div>
         </div>
@@ -317,6 +317,9 @@
                         <div class="flex items-center justify-between gap-2">
                             <span id="obsEditorTitle" class="text-xs font-bold text-amber-400 truncate">Obstáculo</span>
                             <div class="flex items-center gap-1">
+                                <button onclick="openObstaclePlan(state.selectedObsId)" class="px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-[10px] font-semibold flex items-center gap-1 transition" title="Ver Plano de Corte de este obstáculo">
+                                    <i data-lucide="ruler" class="w-3 h-3"></i> Plano
+                                </button>
                                 <button onclick="duplicateSelectedObstacle()" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300" title="Duplicar">
                                     <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                                 </button>
@@ -493,20 +496,27 @@
             </div>
 
             <div class="p-4 flex-1 overflow-y-auto bg-slate-950 space-y-4">
-                <!-- Selector de Costilla (Curva vs Roll-in) + Opciones de Carpintería -->
+                <!-- Selector de Plano (Curva vs Roll-in vs Obstáculos) + Opciones -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 rounded-xl p-2.5">
-                    <div class="flex items-center gap-1.5">
+                    <div class="flex flex-wrap items-center gap-1.5">
                         <button id="btnSvgTabCurve" onclick="setSvgTab('curve')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition">
                             Costilla Curva
                         </button>
                         <button id="btnSvgTabRollIn" onclick="setSvgTab('rollin')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
                             Costilla Roll-in
                         </button>
+                        <button id="btnSvgTabObs" onclick="setSvgTab('obstacle')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
+                            Obstáculos
+                        </button>
                     </div>
                     <label id="svgPlyDeductWrap" class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
                         <input id="chkSvgDeductPly" type="checkbox" checked onchange="toggleSvgPlyDeduction(this.checked)" class="accent-amber-500 w-4 h-4 rounded">
                         <span>Descontar 18 mm (2×9mm) y marcar muesca coping Ø50 mm</span>
                     </label>
+                    <div id="svgObsSelectWrap" class="hidden flex items-center gap-2">
+                        <span class="text-[11px] text-slate-400 whitespace-nowrap">Elegir plano:</span>
+                        <select id="svgObsSelect" onchange="selectSvgObstacle(this.value)" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500 min-w-[190px]"></select>
+                    </div>
                 </div>
 
                 <!-- Alerta de ajuste en placa estándar -->
@@ -518,19 +528,19 @@
                 <!-- Resumen rápido DIY -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
-                        <span class="text-slate-400 block text-[10px] uppercase">Largo de Arco (9mm)</span>
+                        <span id="diyCard1Label" class="text-slate-400 block text-[10px] uppercase">Largo de Arco (9mm)</span>
                         <span id="diyArcLength" class="font-mono font-bold text-amber-400 text-sm">0 cm</span>
                     </div>
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
-                        <span class="text-slate-400 block text-[10px] uppercase">Proyección + Deck</span>
+                        <span id="diyCard2Label" class="text-slate-400 block text-[10px] uppercase">Proyección + Deck</span>
                         <span id="diyTotalX" class="font-mono font-bold text-slate-100 text-sm">0 cm</span>
                     </div>
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
-                        <span class="text-slate-400 block text-[10px] uppercase">Costillas Totales</span>
+                        <span id="diyCard3Label" class="text-slate-400 block text-[10px] uppercase">Costillas Totales</span>
                         <span id="diyRibsCount" class="font-mono font-bold text-slate-100 text-sm">0 u.</span>
                     </div>
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
-                        <span class="text-slate-400 block text-[10px] uppercase">Tirantes 2×4" (Curva)</span>
+                        <span id="diyCard4Label" class="text-slate-400 block text-[10px] uppercase">Tirantes 2×4" (Curva)</span>
                         <span id="diyJoistsCount" class="font-mono font-bold text-slate-100 text-sm">0 u.</span>
                     </div>
                 </div>
@@ -539,18 +549,18 @@
                     <!-- SVG generado dinámicamente -->
                 </div>
 
-                <!-- Tabla de coordenadas cada 20 cm para trazado sin compás -->
+                <!-- Tabla de coordenadas / Lista de cortes -->
                 <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 space-y-2">
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                        <span class="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                        <span id="diyTableTitle" class="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
                             <i data-lucide="crosshair" class="w-4 h-4 text-sky-400"></i>
                             Guía de Trazado sin Compás (Coordenadas cada 20 cm)
                         </span>
-                        <span class="text-[10px] text-slate-400 font-mono">Origen (0,0) = esquina inferior del inicio de curva</span>
+                        <span id="diyTableHint" class="text-[10px] text-slate-400 font-mono">Origen (0,0) = esquina inferior del inicio de curva</span>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs font-mono text-slate-300">
-                            <thead class="bg-slate-950 text-slate-400 text-[10px] uppercase border-b border-slate-800">
+                            <thead id="diyTableHead" class="bg-slate-950 text-slate-400 text-[10px] uppercase border-b border-slate-800">
                                 <tr>
                                     <th class="p-2">Avance X (cm)</th>
                                     <th class="p-2">Altura Curva Y (cm)</th>
@@ -564,7 +574,7 @@
             </div>
 
             <div class="p-4 border-t border-slate-800 bg-slate-900/90 flex flex-wrap items-center justify-between gap-3">
-                <span class="text-xs text-slate-400">
+                <span id="svgFooterNote" class="text-xs text-slate-400">
                     * Escala 1:1 unificada entre costilla y placa estándar de <strong>122 cm × 244 cm</strong>.
                 </span>
                 <button onclick="downloadSVG()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm flex items-center gap-2 shadow-lg transition">
@@ -594,9 +604,39 @@
             </div>
 
             <div class="p-4 flex-1 overflow-y-auto space-y-3">
-                <p class="text-xs text-slate-400">
-                    Podés editar cualquier <strong>Precio Unitario</strong> directo en la tabla: se recalcula al instante y queda guardado en tu navegador.
-                </p>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <!-- Selector de alcance del presupuesto -->
+                    <div class="inline-flex items-center gap-1 p-1 bg-slate-950 border border-slate-800 rounded-xl w-fit">
+                        <button id="btnBudgetTabAll" onclick="setBudgetTab('all')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-slate-950 transition">
+                            Todo
+                        </button>
+                        <button id="btnBudgetTabRamp" onclick="setBudgetTab('ramp')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+                            Solo Rampa
+                        </button>
+                        <button id="btnBudgetTabObs" onclick="setBudgetTab('obstacles')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+                            Solo Obstáculos (<span id="budgetObsCount" class="font-mono">0</span>)
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-400">
+                        Editá cualquier <strong>Precio Unitario</strong> en la tabla: se recalcula al instante.
+                    </p>
+                </div>
+
+                <!-- Resumen comparativo Rampa vs Obstáculos -->
+                <div id="budgetSummaryBar" class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                    <div class="bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2">
+                        <span class="block text-[10px] uppercase text-slate-400">Subtotal Rampa</span>
+                        <span id="budgetSubRamp" class="font-mono font-bold text-amber-400">$ 0</span>
+                    </div>
+                    <div class="bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2">
+                        <span class="block text-[10px] uppercase text-slate-400">Subtotal Obstáculos</span>
+                        <span id="budgetSubObs" class="font-mono font-bold text-sky-400">$ 0</span>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1 bg-slate-950/90 border border-emerald-500/30 rounded-xl px-3 py-2">
+                        <span class="block text-[10px] uppercase text-emerald-400/80">Compra Conjunta</span>
+                        <span id="budgetSubAll" class="font-mono font-bold text-emerald-400">$ 0</span>
+                    </div>
+                </div>
                 <div class="overflow-x-auto rounded-xl border border-slate-800">
                     <table class="w-full text-left text-xs text-slate-300">
                         <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
@@ -614,7 +654,7 @@
 
             <div class="p-4 border-t border-slate-800 bg-slate-950 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Total Estimado</span>
+                    <span id="budgetTotalLabel" class="text-[10px] uppercase tracking-wider text-slate-400 block">Total Estimado (Rampa + Obstáculos)</span>
                     <span id="budgetGrandTotal" class="font-mono text-xl font-extrabold text-emerald-400">$ 0</span>
                 </div>
                 <button onclick="copyBudgetToClipboard()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-sm flex items-center gap-2 shadow-lg transition">
@@ -688,8 +728,10 @@
             obstacles: [],    // Obstáculos extra: cajones, barandas, lanzadores, manual pads
             selectedObsId: null,
             placingObs: false,
-            svgTab: 'curve',  // 'curve' | 'rollin'
+            svgTab: 'curve',  // 'curve' | 'rollin' | 'obstacle'
+            svgObsId: null,   // ID del obstáculo seleccionado en el modal SVG
             svgDeductPly: true, // Descontar 18 mm (2x9mm) y marcar muesca coping en SVG
+            budgetTab: 'all', // 'all' | 'ramp' | 'obstacles'
             material: 'wood', // 'wood' | 'retro' | 'concrete' | 'blueprint'
             env: 'studio',    // 'studio' | 'sunset' | 'park' | 'night' | 'blueprint'
             xray: false,
@@ -697,8 +739,8 @@
             human: true,
             currency: 'ARS',
             prices: {
-                ARS: { p18: 48000, p9: 28000, joist: 7500, coping: 32000, screws: 12000 },
-                USD: { p18: 45, p9: 26, joist: 7, coping: 30, screws: 11 }
+                ARS: { p18: 48000, p9: 28000, joist: 7500, coping: 32000, screws: 12000, angle: 18500, steel: 24000 },
+                USD: { p18: 45, p9: 26, joist: 7, coping: 30, screws: 11, angle: 17, steel: 22 }
             }
         };
 
@@ -2062,12 +2104,34 @@
         // ==========================================
         // 5. PLANO DE CORTE SVG 1:1 + GUÍA DIY
         // ==========================================
+        function openObstaclePlan(id) {
+            if (!state.obstacles || state.obstacles.length === 0) {
+                showToast("Agregá al menos un obstáculo primero.");
+                return;
+            }
+            state.svgObsId = id || state.obstacles[0].id;
+            state.svgTab = 'obstacle';
+            openModal('svgModal');
+        }
+
+        function selectSvgObstacle(val) {
+            state.svgObsId = Number(val);
+            renderSVGPlan();
+        }
+
         function setSvgTab(tab) {
             if (tab === 'rollin' && !state.rollIn) {
                 showToast("Activá el 'Roll-in de Entrada' en el panel para ver su plano.");
                 return;
             }
+            if (tab === 'obstacle' && (!state.obstacles || state.obstacles.length === 0)) {
+                showToast("Agregá algún cajón, baranda, lanzador o manual pad para ver su plano.");
+                return;
+            }
             state.svgTab = tab;
+            if (tab === 'obstacle' && !state.obstacles.some(o => o.id === state.svgObsId)) {
+                state.svgObsId = state.selectedObsId || state.obstacles[0].id;
+            }
             renderSVGPlan();
         }
 
@@ -2081,25 +2145,81 @@
             const fitAlert = document.getElementById('svgFitAlert');
             const fitAlertText = document.getElementById('svgFitAlertText');
             const coordsBody = document.getElementById('diyCoordsBody');
-            const colGround = document.getElementById('diyColGround');
+            const tableHead = document.getElementById('diyTableHead');
+            const tableTitle = document.getElementById('diyTableTitle');
+            const tableHint = document.getElementById('diyTableHint');
+            const footerNote = document.getElementById('svgFooterNote');
 
-            // Sincronizar pestañas del modal SVG
+            const card1Lbl = document.getElementById('diyCard1Label');
+            const card2Lbl = document.getElementById('diyCard2Label');
+            const card3Lbl = document.getElementById('diyCard3Label');
+            const card4Lbl = document.getElementById('diyCard4Label');
+
+            // Validar pestaña activa
             if (!state.rollIn && state.svgTab === 'rollin') state.svgTab = 'curve';
+            if (state.svgTab === 'obstacle' && (!state.obstacles || state.obstacles.length === 0)) state.svgTab = 'curve';
+
             const btnCurve = document.getElementById('btnSvgTabCurve');
             const btnRoll = document.getElementById('btnSvgTabRollIn');
+            const btnObs = document.getElementById('btnSvgTabObs');
             const plyWrap = document.getElementById('svgPlyDeductWrap');
+            const obsSelectWrap = document.getElementById('svgObsSelectWrap');
+            const obsSelect = document.getElementById('svgObsSelect');
 
-            if (state.svgTab === 'curve') {
-                btnCurve.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition";
-                btnRoll.className = state.rollIn
+            const hasObs = state.obstacles && state.obstacles.length > 0;
+            if (btnObs) btnObs.textContent = hasObs ? `Obstáculos (${state.obstacles.length})` : 'Obstáculos';
+
+            btnCurve.className = state.svgTab === 'curve'
+                ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition"
+                : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition";
+            btnRoll.className = state.svgTab === 'rollin'
+                ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500 text-slate-950 transition"
+                : (state.rollIn
                     ? "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition"
-                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 cursor-not-allowed";
-                plyWrap.classList.remove('hidden');
-            } else {
-                btnRoll.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500 text-slate-950 transition";
-                btnCurve.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition";
-                plyWrap.classList.add('hidden');
+                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 cursor-not-allowed");
+            btnObs.className = state.svgTab === 'obstacle'
+                ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500 text-slate-950 transition"
+                : (hasObs
+                    ? "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition"
+                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 cursor-not-allowed");
+
+            plyWrap.classList.toggle('hidden', state.svgTab !== 'curve');
+            obsSelectWrap.classList.toggle('hidden', state.svgTab !== 'obstacle');
+
+            // --- PESTAÑA DE PLANOS DE OBSTÁCULOS ---
+            if (state.svgTab === 'obstacle' && hasObs) {
+                if (!state.obstacles.some(o => o.id === state.svgObsId)) {
+                    state.svgObsId = state.selectedObsId || state.obstacles[0].id;
+                }
+                obsSelect.innerHTML = state.obstacles.map((o, i) =>
+                    `<option value="${o.id}" ${o.id === state.svgObsId ? 'selected' : ''}>${i + 1}. ${OBS_LABELS[o.type]} (${o.L}×${o.type === 'rail' ? o.H : o.W + '×' + o.H} cm)</option>`
+                ).join('');
+
+                const obs = state.obstacles.find(o => o.id === state.svgObsId) || state.obstacles[0];
+                renderObstacleSVGPlan(obs, {
+                    container, fitAlert, fitAlertText, coordsBody, tableHead, tableTitle, tableHint, footerNote,
+                    card1Lbl, card2Lbl, card3Lbl, card4Lbl
+                });
+                initLucideIcons();
+                return;
             }
+
+            // Restaurar etiquetas por defecto para costillas de rampa
+            card1Lbl.textContent = "Largo de Arco (9mm)";
+            card2Lbl.textContent = "Proyección + Deck";
+            card3Lbl.textContent = "Costillas Totales";
+            card4Lbl.textContent = "Tirantes 2×4\" (Curva)";
+            tableTitle.innerHTML = `<i data-lucide="crosshair" class="w-4 h-4 text-sky-400"></i> Guía de Trazado sin Compás (Coordenadas cada 20 cm)`;
+            tableHint.textContent = "Origen (0,0) = esquina inferior del inicio de curva";
+            tableHead.innerHTML = `
+                <tr>
+                    <th class="p-2">Avance X (cm)</th>
+                    <th class="p-2">Altura Curva Y (cm)</th>
+                    <th id="diyColGround" class="p-2 text-amber-400">${state.svgTab === 'rollin' ? 'Altura desde Suelo (Y + B)' : (state.svgDeductPly ? 'Corte Costilla (Y + B - 1.8 cm)' : 'Altura Rodadura (Y + B)')}</th>
+                </tr>
+            `;
+            footerNote.innerHTML = `* Escala 1:1 unificada entre costilla y placa estándar de <strong>122 cm × 244 cm</strong>.`;
+            const colGround = document.getElementById('diyColGround');
 
             const H = state.H;
             const R = state.R;
@@ -2344,6 +2464,301 @@
             initLucideIcons();
         }
 
+        function renderObstacleSVGPlan(obs, ui) {
+            const {
+                container, fitAlert, fitAlertText, coordsBody, tableHead, tableTitle, tableHint, footerNote,
+                card1Lbl, card2Lbl, card3Lbl, card4Lbl
+            } = ui;
+
+            const L = obs.L;
+            const W = obs.W;
+            const H = obs.H;
+            const boardW = 244;
+            const boardH = 122;
+
+            if (obs.type === 'kicker') {
+                // --- LANZADOR (KICKER): COSTILLA A ESCALA 1:1 SOBRE PLACA 244×122 ---
+                let arcLen = 0;
+                const steps = 36;
+                let prevX = 0, prevY = 0;
+                for (let i = 1; i <= steps; i++) {
+                    const t = i / steps;
+                    const x = t * L;
+                    const y = H * Math.pow(t, 1.35);
+                    arcLen += Math.hypot(x - prevX, y - prevY);
+                    prevX = x; prevY = y;
+                }
+                const ribs = Math.max(2, Math.ceil(W / 40) + 1);
+                const joists = Math.max(4, Math.ceil(arcLen / 20));
+                const exitSlopeDeg = (Math.atan((1.35 * H) / L) * (180 / Math.PI)).toFixed(1);
+
+                card1Lbl.textContent = "Largo Rodadura (9mm)";
+                card2Lbl.textContent = "Base × Alto";
+                card3Lbl.textContent = "Costillas 18mm";
+                card4Lbl.textContent = "Tirantes 2×4\"";
+                document.getElementById('diyArcLength').textContent = `${arcLen.toFixed(1)} cm`;
+                document.getElementById('diyTotalX').textContent = `${L} × ${H} cm`;
+                document.getElementById('diyRibsCount').textContent = `${ribs} u.`;
+                document.getElementById('diyJoistsCount').textContent = `${joists} u. (de ${(W - 3.6).toFixed(0)} cm)`;
+
+                const exceedsX = L > boardW;
+                const exceedsY = H > boardH;
+                if (exceedsX || exceedsY) {
+                    fitAlertText.innerHTML = `<strong>Atención (Lanzador):</strong> excede la placa estándar 122 × 244 cm. Conviene ajustar las medidas o empalmar placas.`;
+                    fitAlert.classList.remove('hidden');
+                } else {
+                    fitAlert.classList.add('hidden');
+                }
+
+                const maxX = Math.max(boardW, L) + 46;
+                const maxY = Math.max(boardH, H) + 42;
+                const ox = 18;
+                const oy = maxY - 22;
+                const boardTopY = oy - boardH;
+
+                let pathD = `M ${ox} ${oy}`;
+                for (let i = 1; i <= steps; i++) {
+                    const t = i / steps;
+                    const px = ox + t * L;
+                    const py = oy - H * Math.pow(t, 1.35);
+                    pathD += ` L ${px.toFixed(2)} ${py.toFixed(2)}`;
+                }
+                pathD += ` L ${(ox + L).toFixed(2)} ${oy} Z`;
+
+                container.innerHTML = `
+                    <svg id="cutSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${maxX} ${maxY}" class="w-full h-auto max-h-[360px]">
+                        <defs>
+                            <pattern id="grid20k" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(56,189,248,0.16)" stroke-width="0.6"/>
+                            </pattern>
+                        </defs>
+                        <rect width="${maxX}" height="${maxY}" fill="#090d16" />
+                        <rect x="${ox}" y="${boardTopY}" width="${boardW}" height="${boardH}" fill="url(#grid20k)" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="5,4" />
+                        <text x="${ox + 4}" y="${boardTopY + 9}" fill="#38bdf8" font-size="6.8" font-family="monospace">PLACA ESTÁNDAR 244 × 122 cm (LANZADOR / KICKER — grilla 20 cm)</text>
+                        <path d="${pathD}" fill="rgba(249, 115, 22, 0.25)" stroke="#f97316" stroke-width="1.8" />
+                        <!-- Chapa de entrada -->
+                        <line x1="${ox}" y1="${oy}" x2="${ox + 14}" y2="${oy}" stroke="#e2e8f0" stroke-width="2.5" />
+                        <text x="${ox + 2}" y="${oy - 4}" fill="#e2e8f0" font-size="5.5" font-family="monospace">Chapa 14cm</text>
+                        <!-- Cotas -->
+                        <line x1="${ox}" y1="${oy + 8}" x2="${ox + L}" y2="${oy + 8}" stroke="#94a3b8" stroke-width="0.9" />
+                        <text x="${ox + L / 2}" y="${oy + 16}" fill="#cbd5e1" font-size="6.5" text-anchor="middle" font-family="monospace">Largo Base: ${L} cm | Ancho: ${W} cm</text>
+                        <line x1="${ox + L + 6}" y1="${oy}" x2="${ox + L + 6}" y2="${oy - H}" stroke="#94a3b8" stroke-width="0.9" />
+                        <text x="${ox + L + 10}" y="${oy - H / 2 + 2}" fill="#cbd5e1" font-size="6.5" text-anchor="start" font-family="monospace">${H} cm</text>
+                        <text x="${ox + L - 4}" y="${oy - H - 5}" fill="#fb923c" font-size="6.5" font-weight="bold" text-anchor="end" font-family="monospace">Ángulo salida ${exitSlopeDeg}° | Arco ${arcLen.toFixed(1)} cm</text>
+                    </svg>
+                `;
+
+                tableTitle.innerHTML = `<i data-lucide="crosshair" class="w-4 h-4 text-orange-400"></i> Guía de Trazado Lanzador (Coordenadas cada 20 cm)`;
+                tableHint.textContent = "Origen (0,0) = punta de entrada al ras del piso";
+                tableHead.innerHTML = `
+                    <tr>
+                        <th class="p-2">Avance X (cm)</th>
+                        <th class="p-2">Altura Curva Y (cm)</th>
+                        <th class="p-2 text-amber-400">Corte Costilla (-0.9 cm placa)</th>
+                    </tr>
+                `;
+                coordsBody.innerHTML = '';
+                const xPts = [];
+                for (let x = 0; x < L; x += 20) xPts.push(x);
+                if (xPts[xPts.length - 1] !== L) xPts.push(L);
+                xPts.forEach((xv, idx) => {
+                    const y = H * Math.pow(xv / L, 1.35);
+                    const yCut = Math.max(0, y - 0.9);
+                    const isLast = idx === xPts.length - 1;
+                    const tr = document.createElement('tr');
+                    tr.className = isLast ? 'bg-orange-500/10 font-semibold' : 'hover:bg-slate-800/40';
+                    tr.innerHTML = `
+                        <td class="p-2">${xv.toFixed(1)} cm ${isLast ? '<span class="text-[10px] text-orange-400">(Labio)</span>' : ''}</td>
+                        <td class="p-2">${y.toFixed(1)} cm</td>
+                        <td class="p-2 text-amber-400">${yCut.toFixed(1)} cm</td>
+                    `;
+                    coordsBody.appendChild(tr);
+                });
+                footerNote.innerHTML = `* Escala 1:1 sobre placa estándar <strong>122 × 244 cm</strong>. Agregar chapa galvanizada de 14 × ${W} cm en el labio de entrada.`;
+                return;
+            }
+
+            if (obs.type === 'box' || obs.type === 'pad') {
+                // --- CAJÓN (GRIND BOX) / MANUAL PAD: VISTA LATERAL + PLANTA BASTIDOR ---
+                const crossbars = Math.max(3, Math.ceil(L / 40) + 1);
+                const innerW = Math.max(10, W - 9);
+                const angleMeters = ((L * 2) / 100).toFixed(2);
+                const totalJoistM = (((L * 2) + (crossbars * innerW)) / 100).toFixed(2);
+
+                card1Lbl.textContent = "Tapa Fenólico 18mm";
+                card2Lbl.textContent = "Bastidor 2×4\"";
+                card3Lbl.textContent = "Travesaños Internos";
+                card4Lbl.textContent = "Ángulo Hierro 1\"×1\"";
+                document.getElementById('diyArcLength').textContent = `${L} × ${W} cm`;
+                document.getElementById('diyTotalX').textContent = `${totalJoistM} m totales`;
+                document.getElementById('diyRibsCount').textContent = `${crossbars} u. (de ${innerW} cm)`;
+                document.getElementById('diyJoistsCount').textContent = `${angleMeters} m (2 cantos)`;
+
+                if (L > boardW || W > boardH) {
+                    fitAlertText.innerHTML = `<strong>Nota de corte:</strong> la tapa (${L} × ${W} cm) supera una placa de 244 × 122 cm; vas a necesitar unir dos tramos de fenólico.`;
+                    fitAlert.classList.remove('hidden');
+                } else {
+                    fitAlert.classList.add('hidden');
+                }
+
+                const padX = 24;
+                const svgW = Math.max(260, L + 75);
+                const gapY = 30;
+                const topH = H + 26;
+                const botH = W + 30;
+                const svgH = topH + gapY + botH + 20;
+
+                const sideY = topH;
+                const planY = topH + gapY;
+
+                let crossbarsSvg = '';
+                for (let i = 0; i < crossbars; i++) {
+                    const cx = padX + 4.5 + (i / (crossbars - 1)) * Math.max(1, L - 9);
+                    crossbarsSvg += `<rect x="${(cx - 2.25).toFixed(1)}" y="${(planY + 4.5).toFixed(1)}" width="4.5" height="${Math.max(4, W - 9).toFixed(1)}" fill="rgba(214,167,108,0.45)" stroke="#d97706" stroke-width="0.9" />`;
+                }
+
+                const accent = obs.type === 'pad' ? '#10b981' : '#f59e0b';
+                const labelType = obs.type === 'pad' ? 'MANUAL PAD' : 'CAJÓN (GRIND BOX)';
+
+                container.innerHTML = `
+                    <svg id="cutSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgW} ${svgH}" class="w-full h-auto max-h-[360px]">
+                        <rect width="${svgW}" height="${svgH}" fill="#090d16" />
+
+                        <!-- VISTA LATERAL -->
+                        <text x="${padX}" y="12" fill="#38bdf8" font-size="7" font-family="monospace">VISTA LATERAL — ${labelType} (${L} × ${W} × ${H} cm)</text>
+                        <rect x="${padX}" y="${sideY - H}" width="${L}" height="${H}" fill="rgba(245,158,11,0.18)" stroke="${accent}" stroke-width="1.6" />
+                        <!-- Tapa 18mm -->
+                        <rect x="${padX}" y="${sideY - H}" width="${L}" height="2.2" fill="#e2e8f0" />
+                        <!-- Ángulo metálico en borde superior -->
+                        <rect x="${padX}" y="${sideY - H}" width="${L}" height="3.2" fill="none" stroke="#38bdf8" stroke-width="1.2" />
+                        <!-- Cotas Lateral -->
+                        <line x1="${padX}" y1="${sideY + 7}" x2="${padX + L}" y2="${sideY + 7}" stroke="#94a3b8" stroke-width="0.9" />
+                        <text x="${padX + L / 2}" y="${sideY + 15}" fill="#cbd5e1" font-size="6.5" text-anchor="middle" font-family="monospace">Largo: ${L} cm</text>
+                        <line x1="${padX + L + 7}" y1="${sideY - H}" x2="${padX + L + 7}" y2="${sideY}" stroke="#94a3b8" stroke-width="0.9" />
+                        <text x="${padX + L + 11}" y="${sideY - H / 2 + 2}" fill="#cbd5e1" font-size="6.5" font-family="monospace">Alto ${H} cm</text>
+
+                        <!-- VISTA EN PLANTA (BASTIDOR INTERNO) -->
+                        <text x="${padX}" y="${planY - 6}" fill="#38bdf8" font-size="7" font-family="monospace">PLANTA BASTIDOR INTERNO (Tirantes 2×4" cada ~${Math.round(L / (crossbars - 1))} cm)</text>
+                        <rect x="${padX}" y="${planY}" width="${L}" height="${W}" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.2" />
+                        <!-- Largueros -->
+                        <rect x="${padX}" y="${planY}" width="${L}" height="4.5" fill="rgba(214,167,108,0.55)" stroke="#d97706" stroke-width="0.9" />
+                        <rect x="${padX}" y="${planY + W - 4.5}" width="${L}" height="4.5" fill="rgba(214,167,108,0.55)" stroke="#d97706" stroke-width="0.9" />
+                        ${crossbarsSvg}
+                        <!-- Cantos con ángulo de hierro -->
+                        <line x1="${padX}" y1="${planY}" x2="${padX + L}" y2="${planY}" stroke="#38bdf8" stroke-width="2.2" />
+                        <line x1="${padX}" y1="${planY + W}" x2="${padX + L}" y2="${planY + W}" stroke="#38bdf8" stroke-width="2.2" />
+                        <!-- Cota Ancho -->
+                        <line x1="${padX + L + 7}" y1="${planY}" x2="${padX + L + 7}" y2="${planY + W}" stroke="#94a3b8" stroke-width="0.9" />
+                        <text x="${padX + L + 11}" y="${planY + W / 2 + 2}" fill="#cbd5e1" font-size="6.5" font-family="monospace">Ancho ${W} cm</text>
+                        <text x="${padX + L / 2}" y="${planY + W + 12}" fill="#38bdf8" font-size="6" text-anchor="middle" font-family="monospace">Bordes celestes = Ángulo de hierro 1"×1" (×2 de ${L} cm)</text>
+                    </svg>
+                `;
+
+                tableTitle.innerHTML = `<i data-lucide="scissors" class="w-4 h-4 text-amber-400"></i> Lista de Cortes Exactos (${OBS_LABELS[obs.type]})`;
+                tableHint.textContent = "Carpintería en fenólico 18mm + tirantes 2×4\" (4.5 × 9 cm)";
+                tableHead.innerHTML = `
+                    <tr>
+                        <th class="p-2">Pieza</th>
+                        <th class="p-2">Cantidad</th>
+                        <th class="p-2 text-amber-400">Medida de Corte</th>
+                    </tr>
+                `;
+                const cutRows = [
+                    { name: 'Tapa superior (Fenólico 18 mm)', qty: '1 u.', dim: `${L} × ${W} cm` },
+                    { name: 'Laterales largos (Fenólico 18 mm)', qty: '2 u.', dim: `${L} × ${Math.max(5, H - 1.8).toFixed(1)} cm` },
+                    { name: 'Tapas frontales/cabezales (Fenólico 18 mm)', qty: '2 u.', dim: `${Math.max(5, W - 3.6).toFixed(1)} × ${Math.max(5, H - 1.8).toFixed(1)} cm` },
+                    { name: 'Largueros bastidor (Tirante 2×4")', qty: '2 u.', dim: `${L} cm` },
+                    { name: 'Travesaños internos (Tirante 2×4")', qty: `${crossbars} u.`, dim: `${innerW} cm` },
+                    { name: 'Ángulo de hierro 1"×1" × 1/8" (Cantos Grind)', qty: '2 u.', dim: `${L} cm (total ${angleMeters} m)` }
+                ];
+                coordsBody.innerHTML = cutRows.map(r => `
+                    <tr class="hover:bg-slate-800/40">
+                        <td class="p-2">${r.name}</td>
+                        <td class="p-2 text-slate-200 font-bold">${r.qty}</td>
+                        <td class="p-2 text-amber-400">${r.dim}</td>
+                    </tr>
+                `).join('');
+                footerNote.innerHTML = `* Atornillar el ángulo de hierro con tornillos fresados cada 25 cm (cabeza embutida para que no trabe el truck).`;
+                return;
+            }
+
+            // --- BARANDA (FLAT RAIL): PLANO DE HERRERÍA LATERAL + FRONTAL ---
+            const inset = Math.min(20, Math.round(L * 0.12));
+            const span = Math.max(30, L - inset * 2);
+            const footW = 36;
+            const totalSteelM = ((L + H * 2) / 100).toFixed(2);
+
+            card1Lbl.textContent = "Caño Superior";
+            card2Lbl.textContent = "Patas Verticales";
+            card3Lbl.textContent = "Separación Patas";
+            card4Lbl.textContent = "Planchuelas Base";
+            document.getElementById('diyArcLength').textContent = `${L} cm (Ø 2" o 40×40)`;
+            document.getElementById('diyTotalX').textContent = `2 u. × ${Math.max(10, H - 3)} cm`;
+            document.getElementById('diyRibsCount').textContent = `${span} cm entre ejes`;
+            document.getElementById('diyJoistsCount').textContent = `2 u. × 36 × 10 cm`;
+            fitAlert.classList.add('hidden');
+
+            const padX = 24;
+            const frontOffset = padX + L + 45;
+            const svgW = frontOffset + footW + 40;
+            const svgH = Math.max(115, H + 58);
+            const baseY = svgH - 24;
+
+            container.innerHTML = `
+                <svg id="cutSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgW} ${svgH}" class="w-full h-auto max-h-[340px]">
+                    <rect width="${svgW}" height="${svgH}" fill="#090d16" />
+
+                    <!-- VISTA LATERAL -->
+                    <text x="${padX}" y="13" fill="#38bdf8" font-size="7" font-family="monospace">VISTA LATERAL — BARANDA FLAT RAIL (${L} × ${H} cm)</text>
+                    <!-- Caño superior -->
+                    <rect x="${padX}" y="${baseY - H}" width="${L}" height="4.8" rx="2" fill="#38bdf8" />
+                    <!-- Patas -->
+                    <rect x="${padX + inset - 2}" y="${baseY - H + 4.8}" width="4" height="${Math.max(5, H - 6)}" fill="#cbd5e1" />
+                    <rect x="${padX + L - inset - 2}" y="${baseY - H + 4.8}" width="4" height="${Math.max(5, H - 6)}" fill="#cbd5e1" />
+                    <!-- Planchuelas base -->
+                    <rect x="${padX + inset - 6}" y="${baseY - 1.8}" width="12" height="1.8" fill="#f59e0b" />
+                    <rect x="${padX + L - inset - 6}" y="${baseY - 1.8}" width="12" height="1.8" fill="#f59e0b" />
+                    <!-- Cotas Lateral -->
+                    <line x1="${padX}" y1="${baseY + 8}" x2="${padX + L}" y2="${baseY + 8}" stroke="#94a3b8" stroke-width="0.9" />
+                    <text x="${padX + L / 2}" y="${baseY + 16}" fill="#cbd5e1" font-size="6.5" text-anchor="middle" font-family="monospace">Largo Total: ${L} cm (Apoyos a ${inset} cm de cada punta)</text>
+                    <line x1="${padX - 8}" y1="${baseY - H}" x2="${padX - 8}" y2="${baseY}" stroke="#94a3b8" stroke-width="0.9" />
+                    <text x="${padX - 11}" y="${baseY - H / 2 + 2}" fill="#cbd5e1" font-size="6.2" text-anchor="end" font-family="monospace">${H}cm</text>
+
+                    <!-- VISTA FRONTAL -->
+                    <text x="${frontOffset}" y="13" fill="#38bdf8" font-size="7" font-family="monospace">PERFIL FRONTAL</text>
+                    <circle cx="${frontOffset + footW / 2}" cy="${baseY - H + 2.4}" r="2.6" fill="#38bdf8" />
+                    <rect x="${frontOffset + footW / 2 - 2}" y="${baseY - H + 4.8}" width="4" height="${Math.max(5, H - 6)}" fill="#cbd5e1" />
+                    <rect x="${frontOffset}" y="${baseY - 1.8}" width="${footW}" height="2" fill="#f59e0b" />
+                    <line x1="${frontOffset}" y1="${baseY + 8}" x2="${frontOffset + footW}" y2="${baseY + 8}" stroke="#94a3b8" stroke-width="0.9" />
+                    <text x="${frontOffset + footW / 2}" y="${baseY + 16}" fill="#cbd5e1" font-size="6.5" text-anchor="middle" font-family="monospace">Base ${footW} cm</text>
+                </svg>
+            `;
+
+            tableTitle.innerHTML = `<i data-lucide="wrench" class="w-4 h-4 text-sky-400"></i> Lista de Cortes de Herrería (Baranda Flat Rail)`;
+            tableHint.textContent = `Total caño estructural estimado: ${totalSteelM} m`;
+            tableHead.innerHTML = `
+                <tr>
+                    <th class="p-2">Pieza</th>
+                    <th class="p-2">Cantidad</th>
+                    <th class="p-2 text-amber-400">Medida de Corte</th>
+                </tr>
+            `;
+            const railRows = [
+                { name: 'Caño superior (Redondo 2" o Cuadrado 40×40 mm × 2 mm)', qty: '1 u.', dim: `${L} cm` },
+                { name: 'Patas verticales (Caño estructural 40×40 mm)', qty: '2 u.', dim: `${Math.max(10, H - 3)} cm` },
+                { name: 'Planchuelas de apoyo (Hierro 3/16" con goma antideslizante)', qty: '2 u.', dim: `36 × 10 cm` },
+                { name: 'Escuadras / cartelas de refuerzo (opcional)', qty: '4 u.', dim: `8 × 8 cm` }
+            ];
+            coordsBody.innerHTML = railRows.map(r => `
+                <tr class="hover:bg-slate-800/40">
+                    <td class="p-2">${r.name}</td>
+                    <td class="p-2 text-slate-200 font-bold">${r.qty}</td>
+                    <td class="p-2 text-amber-400">${r.dim}</td>
+                </tr>
+            `).join('');
+            footerNote.innerHTML = `* Soldar tapas en los extremos del caño superior y pegar cámara de bicicleta debajo de las planchuelas para que no patine.`;
+        }
+
         function downloadSVG() {
             const svgEl = document.getElementById('cutSvg');
             if (!svgEl) return;
@@ -2351,9 +2766,14 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = state.svgTab === 'rollin'
-                ? `plano-rollin-${state.H}x${state.rollInL}cm.svg`
-                : `plano-costilla-${state.H}x${state.R}cm.svg`;
+            if (state.svgTab === 'obstacle') {
+                const obs = state.obstacles.find(o => o.id === state.svgObsId) || state.obstacles[0];
+                a.download = obs ? `plano-${obs.type}-${obs.L}x${obs.H}cm.svg` : `plano-obstaculo.svg`;
+            } else {
+                a.download = state.svgTab === 'rollin'
+                    ? `plano-rollin-${state.H}x${state.rollInL}cm.svg`
+                    : `plano-costilla-${state.H}x${state.R}cm.svg`;
+            }
             a.click();
             URL.revokeObjectURL(url);
             showToast("Plano SVG descargado.");
@@ -2368,94 +2788,207 @@
             renderBudgetTable();
         }
 
-        function getBudgetItems() {
-            const H = state.H / 100;
-            const R = state.R / 100;
-            const W = state.W / 100;
-            const F = (state.mode === 'miniramp' ? state.F : 0) / 100;
-            const D = state.D / 100;
-            const B = state.B / 100;
-            const sides = state.mode === 'miniramp' ? 2 : 1;
+        function setBudgetTab(tab) {
+            state.budgetTab = tab;
+            renderBudgetTable();
+        }
 
+        function getBudgetItems(scope) {
+            const targetScope = scope || state.budgetTab || 'all';
             const curr = state.currency;
             const p = state.prices[curr];
 
-            const hClamped = Math.min(H, R);
-            const projX = Math.sqrt(Math.max(0.0001, 2 * R * hClamped - hClamped * hClamped));
-            const theta = Math.asin(Math.min(1.0, projX / R));
-            const arcLength = R * theta;
+            let area18 = 0;
+            let area9Double = 0;
+            let totalJoistMeters = 0;
+            let totalCopingMeters = 0;
+            let angleIronMeters = 0;
+            let railSteelMeters = 0;
 
-            const effRollW = state.rollIn ? Math.min(state.rollInW / 100, Math.max(0.5, W - 0.6)) : 0;
-            const effRollL = state.rollIn ? Math.max(state.rollInL / 100, projX + 0.2) : 0;
-            const rollArc = state.rollIn ? Math.sqrt(effRollL * effRollL + H * H) * 1.05 : 0;
+            // --- MATERIALES DE LA RAMPA (Y ROLL-IN) ---
+            if (targetScope === 'all' || targetScope === 'ramp') {
+                const H = state.H / 100;
+                const R = state.R / 100;
+                const W = state.W / 100;
+                const F = (state.mode === 'miniramp' ? state.F : 0) / 100;
+                const D = state.D / 100;
+                const B = state.B / 100;
+                const sides = state.mode === 'miniramp' ? 2 : 1;
 
-            // 1. Placas Fenólico 18mm (Costillas + Decks + Roll-in opcional)
-            const numRibs = (Math.ceil(state.W / 70) + 1) * sides;
-            const ribArea = (projX + D) * (H + B) * 0.65;
-            const rollRibArea = state.rollIn
-                ? ((effRollL + D) * (H + B) * 0.6) * Math.max(2, Math.ceil((effRollW * 100) / 60) + 1)
-                : 0;
-            const totalRibArea = (ribArea * numRibs) + rollRibArea;
-            const deckArea = D * W * sides;
-            const sheets18 = Math.max(1, Math.ceil(((totalRibArea + deckArea) * 1.15) / (1.22 * 2.44)));
+                const hClamped = Math.min(H, R);
+                const projX = Math.sqrt(Math.max(0.0001, 2 * R * hClamped - hClamped * hClamped));
+                const theta = Math.asin(Math.min(1.0, projX / R));
+                const arcLength = R * theta;
 
-            // 2. Placas Fenólico 9mm (Doble capa de rodadura)
-            const mainCurveArea = arcLength * (W * sides - effRollW);
-            const rollSurfArea = rollArc * effRollW;
-            const flatArea = F * W;
-            const totalRidingArea = mainCurveArea + rollSurfArea + flatArea;
-            const sheets9 = Math.max(1, Math.ceil((totalRidingArea * 2 * 1.1) / (1.22 * 2.44)));
+                const effRollW = state.rollIn ? Math.min(state.rollInW / 100, Math.max(0.5, W - 0.6)) : 0;
+                const effRollL = state.rollIn ? Math.max(state.rollInL / 100, projX + 0.2) : 0;
+                const rollArc = state.rollIn ? Math.sqrt(effRollL * effRollL + H * H) * 1.05 : 0;
 
-            // 3. Tirantes de Madera 2x4" (2.44 m)
-            const joistsPerCurve = Math.ceil((arcLength * 100) / 20);
-            const rollJoistsMeters = state.rollIn ? Math.ceil((rollArc * 100) / 20) * effRollW : 0;
-            const totalJoistsCount = (joistsPerCurve * sides) + Math.ceil((F * 100) / 20) + (3 * sides);
-            const totalJoistMeters = (totalJoistsCount * W) + rollJoistsMeters;
-            const joists2x4 = Math.max(2, Math.ceil(totalJoistMeters / 2.44));
+                const numRibs = (Math.ceil(state.W / 70) + 1) * sides;
+                const ribArea = (projX + D) * (H + B) * 0.65;
+                const rollRibArea = state.rollIn
+                    ? ((effRollL + D) * (H + B) * 0.6) * Math.max(2, Math.ceil((effRollW * 100) / 60) + 1)
+                    : 0;
+                area18 += (ribArea * numRibs) + rollRibArea + (D * W * sides);
 
-            // 4. Caño de Coping 2" (descuenta el ancho ocupado por el roll-in)
-            const totalCopingMeters = Math.max(0.5, (W * sides) - effRollW);
-            const copingBars6m = Math.max(1, Math.ceil(totalCopingMeters / 6));
+                const mainCurveArea = arcLength * (W * sides - effRollW);
+                const rollSurfArea = rollArc * effRollW;
+                const flatArea = F * W;
+                area9Double += (mainCurveArea + rollSurfArea + flatArea) * 2;
 
-            // 5. Cajas de Tornillos T2
-            const screwBoxes = Math.max(1, Math.ceil(totalRidingArea / 5));
+                const joistsPerCurve = Math.ceil((arcLength * 100) / 20);
+                const rollJoistsMeters = state.rollIn ? Math.ceil((rollArc * 100) / 20) * effRollW : 0;
+                const totalJoistsCount = (joistsPerCurve * sides) + Math.ceil((F * 100) / 20) + (3 * sides);
+                totalJoistMeters += (totalJoistsCount * W) + rollJoistsMeters;
 
-            return [
-                { key: 'p18', name: 'Placas Fenólico 18 mm (1.22 × 2.44 m)', qty: sheets18, price: p.p18 },
-                { key: 'p9', name: 'Placas Fenólico 9 mm (Doble Capa Rodadura)', qty: sheets9, price: p.p9 },
-                { key: 'joist', name: 'Tirantes Madera 2"×4" (Largo 2.44 m)', qty: joists2x4, price: p.joist },
-                { key: 'coping', name: `Caño Hierro 2" Coping (Barras 6 m — ${totalCopingMeters.toFixed(2)} m totales)`, qty: copingBars6m, price: p.coping },
-                { key: 'screws', name: 'Caja Tornillos Autofrenantes T2 (× 500 u.)', qty: screwBoxes, price: p.screws }
-            ];
+                totalCopingMeters += Math.max(0.5, (W * sides) - effRollW);
+            }
+
+            // --- MATERIALES DE OBSTÁCULOS STREET ---
+            if ((targetScope === 'all' || targetScope === 'obstacles') && state.obstacles && state.obstacles.length > 0) {
+                state.obstacles.forEach(obs => {
+                    const oL = obs.L / 100;
+                    const oW = obs.W / 100;
+                    const oH = obs.H / 100;
+
+                    if (obs.type === 'box' || obs.type === 'pad') {
+                        area18 += (oL * oW) + (2 * oL * oH) + (2 * oW * oH);
+                        const crossbars = Math.max(3, Math.ceil(obs.L / 40) + 1);
+                        totalJoistMeters += (2 * oL) + (crossbars * Math.max(0.1, oW - 0.09));
+                        angleIronMeters += oL * 2;
+                    } else if (obs.type === 'kicker') {
+                        const kRibs = Math.max(2, Math.ceil(obs.W / 40) + 1);
+                        area18 += (oL * oH * 0.55 * kRibs) + (oW * oH);
+                        const kArc = Math.hypot(oL, oH) * 1.05;
+                        area9Double += (kArc * oW) * 2;
+                        const kJoists = Math.max(4, Math.ceil((kArc * 100) / 20));
+                        totalJoistMeters += kJoists * oW;
+                    } else if (obs.type === 'rail') {
+                        railSteelMeters += oL + (oH * 2) + 0.4;
+                    }
+                });
+            }
+
+            const items = [];
+
+            if (area18 > 0) {
+                const sheets18 = Math.max(1, Math.ceil((area18 * 1.15) / (1.22 * 2.44)));
+                items.push({ key: 'p18', name: 'Placas Fenólico 18 mm (1.22 × 2.44 m)', qty: sheets18, price: p.p18 });
+            }
+
+            if (area9Double > 0) {
+                const sheets9 = Math.max(1, Math.ceil((area9Double * 1.1) / (1.22 * 2.44)));
+                items.push({ key: 'p9', name: 'Placas Fenólico 9 mm (Doble Capa Rodadura)', qty: sheets9, price: p.p9 });
+            }
+
+            if (totalJoistMeters > 0) {
+                const joists2x4 = Math.max(1, Math.ceil(totalJoistMeters / 2.44));
+                items.push({ key: 'joist', name: 'Tirantes Madera 2"×4" (Largo 2.44 m)', qty: joists2x4, price: p.joist });
+            }
+
+            if (totalCopingMeters > 0) {
+                const copingBars6m = Math.max(1, Math.ceil(totalCopingMeters / 6));
+                items.push({
+                    key: 'coping',
+                    name: `Caño Hierro 2" Coping (Barras 6 m — ${totalCopingMeters.toFixed(2)} m totales)`,
+                    qty: copingBars6m,
+                    price: p.coping
+                });
+            }
+
+            if (angleIronMeters > 0) {
+                const angleBars6m = Math.max(1, Math.ceil(angleIronMeters / 6));
+                items.push({
+                    key: 'angle',
+                    name: `Ángulo Hierro 1"×1" Cantos Cajón/Pad (Barras 6 m — ${angleIronMeters.toFixed(2)} m)`,
+                    qty: angleBars6m,
+                    price: p.angle
+                });
+            }
+
+            if (railSteelMeters > 0) {
+                const steelBars3m = Math.max(1, Math.ceil(railSteelMeters / 3));
+                items.push({
+                    key: 'steel',
+                    name: `Caño Estructural + Planchuelas Baranda (Tramos 3 m — ${railSteelMeters.toFixed(2)} m)`,
+                    qty: steelBars3m,
+                    price: p.steel
+                });
+            }
+
+            if (area18 > 0 || area9Double > 0 || angleIronMeters > 0) {
+                const screwBoxes = Math.max(1, Math.ceil((area9Double / 2 + area18 * 0.5) / 5));
+                items.push({ key: 'screws', name: 'Caja Tornillos Autofrenantes T2 (× 500 u.)', qty: screwBoxes, price: p.screws });
+            }
+
+            return items;
+        }
+
+        function calcScopeTotal(scope) {
+            return getBudgetItems(scope).reduce((acc, item) => acc + item.qty * item.price, 0);
         }
 
         function renderBudgetTable() {
             const body = document.getElementById('budgetTableBody');
+            const obsCountEl = document.getElementById('budgetObsCount');
+            const obsCount = state.obstacles ? state.obstacles.length : 0;
+            if (obsCountEl) obsCountEl.textContent = obsCount;
+
+            // Actualizar estilos de pestañas
+            const btnAll = document.getElementById('btnBudgetTabAll');
+            const btnRamp = document.getElementById('btnBudgetTabRamp');
+            const btnObs = document.getElementById('btnBudgetTabObs');
+            if (btnAll) {
+                btnAll.className = state.budgetTab === 'all'
+                    ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-slate-950 transition"
+                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition";
+            }
+            if (btnRamp) {
+                btnRamp.className = state.budgetTab === 'ramp'
+                    ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition"
+                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition";
+            }
+            if (btnObs) {
+                btnObs.className = state.budgetTab === 'obstacles'
+                    ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500 text-slate-950 transition"
+                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition";
+            }
+
             const curr = state.currency;
             const sym = curr === 'ARS' ? '$' : 'US$';
-            const items = getBudgetItems();
+            const items = getBudgetItems(state.budgetTab);
 
             body.innerHTML = '';
 
-            items.forEach(item => {
-                const sub = item.qty * item.price;
+            if (items.length === 0) {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition";
                 tr.innerHTML = `
-                    <td class="p-2.5 font-medium text-slate-200">${item.name}</td>
-                    <td class="p-2.5 text-center font-mono text-amber-400 font-bold">${item.qty}</td>
-                    <td class="p-2.5 text-right font-mono">
-                        <div class="inline-flex items-center gap-1 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 focus-within:border-amber-500">
-                            <span class="text-slate-500 text-[10px]">${sym}</span>
-                            <input type="number" min="0" step="${curr === 'ARS' ? '100' : '0.5'}" value="${item.price}"
-                                oninput="updateItemPrice('${item.key}', this.value, ${item.qty})"
-                                class="w-20 bg-transparent text-right text-slate-100 focus:outline-none">
-                        </div>
+                    <td colspan="4" class="p-6 text-center text-slate-400 text-xs">
+                        Todavía no agregaste obstáculos (cajones, barandas, lanzadores o manual pads) en el diseño.
                     </td>
-                    <td id="sub_${item.key}" class="p-2.5 text-right font-mono font-bold text-slate-100">${sym} ${sub.toLocaleString()}</td>
                 `;
                 body.appendChild(tr);
-            });
+            } else {
+                items.forEach(item => {
+                    const sub = item.qty * item.price;
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/40 transition";
+                    tr.innerHTML = `
+                        <td class="p-2.5 font-medium text-slate-200">${item.name}</td>
+                        <td class="p-2.5 text-center font-mono text-amber-400 font-bold">${item.qty}</td>
+                        <td class="p-2.5 text-right font-mono">
+                            <div class="inline-flex items-center gap-1 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 focus-within:border-amber-500">
+                                <span class="text-slate-500 text-[10px]">${sym}</span>
+                                <input type="number" min="0" step="${curr === 'ARS' ? '100' : '0.5'}" value="${item.price}"
+                                    oninput="updateItemPrice('${item.key}', this.value, ${item.qty})"
+                                    class="w-20 bg-transparent text-right text-slate-100 focus:outline-none">
+                            </div>
+                        </td>
+                        <td id="sub_${item.key}" class="p-2.5 text-right font-mono font-bold text-slate-100">${sym} ${sub.toLocaleString()}</td>
+                    `;
+                    body.appendChild(tr);
+                });
+            }
 
             recalcGrandTotal();
         }
@@ -2475,17 +3008,55 @@
         function recalcGrandTotal() {
             const curr = state.currency;
             const sym = curr === 'ARS' ? '$' : 'US$';
-            const items = getBudgetItems();
-            const grandTotal = items.reduce((acc, item) => acc + item.qty * item.price, 0);
-            document.getElementById('budgetGrandTotal').textContent = `${sym} ${grandTotal.toLocaleString()}`;
+            const totalRamp = calcScopeTotal('ramp');
+            const totalObs = calcScopeTotal('obstacles');
+            const totalAll = calcScopeTotal('all');
+
+            const subRampEl = document.getElementById('budgetSubRamp');
+            const subObsEl = document.getElementById('budgetSubObs');
+            const subAllEl = document.getElementById('budgetSubAll');
+            if (subRampEl) subRampEl.textContent = `${sym} ${totalRamp.toLocaleString()}`;
+            if (subObsEl) subObsEl.textContent = `${sym} ${totalObs.toLocaleString()}`;
+            if (subAllEl) subAllEl.textContent = `${sym} ${totalAll.toLocaleString()}`;
+
+            const labelEl = document.getElementById('budgetTotalLabel');
+            const activeTotal = state.budgetTab === 'ramp'
+                ? totalRamp
+                : (state.budgetTab === 'obstacles' ? totalObs : totalAll);
+
+            if (labelEl) {
+                labelEl.textContent = state.budgetTab === 'ramp'
+                    ? 'Total Estimado (Solo Rampa)'
+                    : (state.budgetTab === 'obstacles'
+                        ? 'Total Estimado (Solo Obstáculos)'
+                        : 'Total Estimado (Rampa + Obstáculos)');
+            }
+            document.getElementById('budgetGrandTotal').textContent = `${sym} ${activeTotal.toLocaleString()}`;
         }
 
         function copyBudgetToClipboard() {
-            const items = getBudgetItems();
+            const items = getBudgetItems(state.budgetTab);
             const curr = state.currency;
             const sym = curr === 'ARS' ? '$' : 'US$';
-            let text = `📋 PRESUPUESTO RAMPA DE SKATE (${state.mode.toUpperCase()}${state.rollIn ? ' + ROLL-IN' : ''})\n`;
-            text += `Medidas: ${state.H}cm Alto | ${state.R}cm Radio | ${state.W}cm Ancho${state.mode === 'miniramp' ? ` | ${state.F}cm Flat` : ''}${state.rollIn ? ` | Roll-in ${state.rollInW}×${state.rollInL}cm` : ''}\n`;
+            const obsCount = state.obstacles ? state.obstacles.length : 0;
+
+            let title = 'PRESUPUESTO SKATEPARK';
+            if (state.budgetTab === 'ramp') {
+                title = `PRESUPUESTO SOLO RAMPA (${state.mode.toUpperCase()}${state.rollIn ? ' + ROLL-IN' : ''})`;
+            } else if (state.budgetTab === 'obstacles') {
+                title = `PRESUPUESTO SOLO OBSTÁCULOS (${obsCount} u.)`;
+            } else {
+                title = `PRESUPUESTO COMPLETO (${state.mode.toUpperCase()}${state.rollIn ? ' + ROLL-IN' : ''}${obsCount > 0 ? ` + ${obsCount} OBSTÁCULOS` : ''})`;
+            }
+
+            let text = `📋 ${title}\n`;
+            if (state.budgetTab === 'all' || state.budgetTab === 'ramp') {
+                text += `Rampa: ${state.H}cm Alto | ${state.R}cm Radio | ${state.W}cm Ancho${state.mode === 'miniramp' ? ` | ${state.F}cm Flat` : ''}${state.rollIn ? ` | Roll-in ${state.rollInW}×${state.rollInL}cm` : ''}\n`;
+            }
+            if ((state.budgetTab === 'all' || state.budgetTab === 'obstacles') && obsCount > 0) {
+                const obsSummary = state.obstacles.map(o => `${OBS_LABELS[o.type]} (${o.L}×${o.H}cm)`).join(', ');
+                text += `Obstáculos: ${obsSummary}\n`;
+            }
             text += `----------------------------------------\n`;
 
             items.forEach(item => {
