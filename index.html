@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maqueta Skate Pro v8.2 - Diseñador 3D de Rampas</title>
+    <title>Maqueta Skate Pro v8.3 - Diseñador 3D de Rampas</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -84,7 +84,7 @@
                     <i data-lucide="waves" class="w-4 h-4 text-slate-950"></i>
                 </div>
                 <h1 class="font-bold text-sm sm:text-lg tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                    Maqueta Skate Pro <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono border border-amber-500/30">v8.2</span>
+                    Maqueta Skate Pro <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono border border-amber-500/30">v8.3</span>
                 </h1>
             </div>
         </div>
@@ -283,6 +283,95 @@
                     </div>
                 </div>
 
+                <!-- Obstáculos: Cajones, Barandas y Lanzadores -->
+                <div class="space-y-3 pt-2 border-t border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                            <i data-lucide="box" class="w-3.5 h-3.5 text-sky-400"></i>
+                            Obstáculos y Street
+                        </label>
+                        <span id="obsCountBadge" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">0</span>
+                    </div>
+
+                    <!-- Botones para agregar obstáculos -->
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <button onclick="addObstacle('box')" class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-xs font-medium text-slate-200 flex items-center justify-center gap-1 transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5 text-amber-400"></i> Cajón
+                        </button>
+                        <button onclick="addObstacle('rail')" class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-xs font-medium text-slate-200 flex items-center justify-center gap-1 transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5 text-sky-400"></i> Baranda
+                        </button>
+                        <button onclick="addObstacle('kicker')" class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-xs font-medium text-slate-200 flex items-center justify-center gap-1 transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5 text-orange-400"></i> Lanzador
+                        </button>
+                        <button onclick="addObstacle('pad')" class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-xs font-medium text-slate-200 flex items-center justify-center gap-1 transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5 text-emerald-400"></i> Manual Pad
+                        </button>
+                    </div>
+
+                    <!-- Lista de obstáculos agregados -->
+                    <div id="obstaclesList" class="space-y-1 max-h-32 overflow-y-auto"></div>
+
+                    <!-- Editor del obstáculo seleccionado -->
+                    <div id="obsEditor" class="hidden space-y-2.5 bg-slate-950/80 border border-slate-800 rounded-xl p-2.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <span id="obsEditorTitle" class="text-xs font-bold text-amber-400 truncate">Obstáculo</span>
+                            <div class="flex items-center gap-1">
+                                <button onclick="duplicateSelectedObstacle()" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300" title="Duplicar">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <button onclick="deleteSelectedObstacle()" class="p-1 rounded bg-red-950/70 hover:bg-red-900 text-red-300" title="Eliminar">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button id="btnPlaceObsMode" onclick="togglePlaceObstacleMode()" class="w-full py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1.5 transition">
+                            <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5"></i>
+                            <span id="btnPlaceObsText">Ubicar haciendo clic en 3D</span>
+                        </button>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px]">
+                                <span class="text-slate-400">Posición X (Largo)</span>
+                                <span id="valObsX" class="font-mono font-bold text-slate-200">0 cm</span>
+                            </div>
+                            <input id="inputObsX" type="range" min="-600" max="600" step="10" value="0" class="w-full">
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px]">
+                                <span class="text-slate-400">Posición Z (Lateral)</span>
+                                <span id="valObsZ" class="font-mono font-bold text-slate-200">0 cm</span>
+                            </div>
+                            <input id="inputObsZ" type="range" min="-500" max="500" step="10" value="0" class="w-full">
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px]">
+                                <span class="text-slate-400">Rotación</span>
+                                <span id="valObsRot" class="font-mono font-bold text-slate-200">0°</span>
+                            </div>
+                            <input id="inputObsRot" type="range" min="0" max="345" step="15" value="0" class="w-full">
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-800/80">
+                            <div>
+                                <span class="text-[10px] text-slate-400 block">Largo (cm)</span>
+                                <input id="inputObsL" type="number" min="40" max="500" step="10" class="w-full bg-slate-900 border border-slate-700 rounded-md px-1.5 py-1 text-xs font-mono text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div id="obsWrapW">
+                                <span class="text-[10px] text-slate-400 block">Ancho (cm)</span>
+                                <input id="inputObsW" type="number" min="20" max="300" step="10" class="w-full bg-slate-900 border border-slate-700 rounded-md px-1.5 py-1 text-xs font-mono text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 block">Alto (cm)</span>
+                                <input id="inputObsH" type="number" min="15" max="150" step="5" class="w-full bg-slate-900 border border-slate-700 rounded-md px-1.5 py-1 text-xs font-mono text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Estilo y Estructura -->
                 <div class="space-y-3 pt-2 border-t border-slate-800">
                     <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Visualización</label>
@@ -330,6 +419,13 @@
         <!-- 3D Viewport Area -->
         <main class="flex-1 relative bg-slate-950 overflow-hidden">
             <div id="canvasContainer" class="w-full h-full"></div>
+
+            <!-- Banner de modo ubicación con clic -->
+            <div id="placeModeBanner" class="hidden absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-amber-500 text-slate-950 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-xl flex items-center gap-2">
+                <i data-lucide="crosshair" class="w-4 h-4"></i>
+                <span>Tocá el piso o el flat para ubicar el obstáculo</span>
+                <button onclick="togglePlaceObstacleMode(false)" class="ml-1 px-1.5 py-0.5 rounded-full bg-slate-950/20 hover:bg-slate-950/30 text-[10px]">Cancelar</button>
+            </div>
 
             <!-- Live Tech Specs HUD (Top Right) -->
             <div class="absolute top-3 right-3 bg-slate-900/85 backdrop-blur-md border border-slate-800 rounded-2xl p-3 shadow-xl pointer-events-auto max-w-[240px] sm:max-w-xs space-y-2">
@@ -589,6 +685,9 @@
             patioEnabled: false, // Límites del patio/galpón en 3D
             patioL: 700,      // Largo del patio (cm)
             patioW: 400,      // Ancho del patio (cm)
+            obstacles: [],    // Obstáculos extra: cajones, barandas, lanzadores, manual pads
+            selectedObsId: null,
+            placingObs: false,
             svgTab: 'curve',  // 'curve' | 'rollin'
             svgDeductPly: true, // Descontar 18 mm (2x9mm) y marcar muesca coping en SVG
             material: 'wood', // 'wood' | 'retro' | 'concrete' | 'blueprint'
@@ -604,7 +703,8 @@
         };
 
         // Variables globales de Three.js
-        let scene, camera, renderer, controls, rampGroup, groundMesh, gridHelper;
+        let scene, camera, renderer, controls, rampGroup, obstaclesGroup, groundMesh, gridHelper;
+        let raycaster, pointerDownPos = { x: 0, y: 0 };
         let toastTimer = null;
 
         // ==========================================
@@ -620,6 +720,7 @@
             syncModeUI(state.mode);
             applyEnvironment();
             rebuild3DModel();
+            renderObstaclesUI();
             resetCamera();
             animate();
             if (loadedFromURL) {
@@ -692,6 +793,7 @@
                     H: state.H, R: state.R, W: state.W, F: state.F, D: state.D, B: state.B,
                     rollIn: state.rollIn, rollInW: state.rollInW, rollInL: state.rollInL,
                     patioEnabled: state.patioEnabled, patioL: state.patioL, patioW: state.patioW,
+                    obstacles: state.obstacles,
                     mode: state.mode, material: state.material, env: state.env,
                     prices: state.prices, currency: state.currency
                 }));
@@ -710,6 +812,9 @@
                     ['H', 'R', 'W', 'F', 'D', 'B', 'rollIn', 'rollInW', 'rollInL', 'patioEnabled', 'patioL', 'patioW', 'mode', 'material', 'env', 'currency'].forEach(k => {
                         if (parsed[k] !== undefined) state[k] = parsed[k];
                     });
+                    if (Array.isArray(parsed.obstacles)) {
+                        state.obstacles = parsed.obstacles;
+                    }
                 }
                 const savedKey = localStorage.getItem('skate_ramp_v8_apikey');
                 const keyInput = document.getElementById('geminiApiKeyInput');
@@ -742,6 +847,26 @@
                 }
                 if (['studio', 'sunset', 'park', 'night', 'blueprint'].includes(params.get('env'))) {
                     state.env = params.get('env');
+                }
+                if (params.has('obs')) {
+                    try {
+                        const rawObs = params.get('obs').split(';').filter(Boolean);
+                        state.obstacles = rawObs.map((entry, idx) => {
+                            const [type, x, z, rot, L, W, H] = entry.split(',');
+                            const validTypes = ['box', 'rail', 'kicker', 'pad'];
+                            if (!validTypes.includes(type)) return null;
+                            return {
+                                id: Date.now() + idx,
+                                type,
+                                x: parseInt(x, 10) || 0,
+                                z: parseInt(z, 10) || 0,
+                                rot: parseInt(rot, 10) || 0,
+                                L: parseInt(L, 10) || 180,
+                                W: parseInt(W, 10) || 60,
+                                H: parseInt(H, 10) || 35
+                            };
+                        }).filter(Boolean);
+                    } catch (e) {}
                 }
                 return true;
             } catch (e) {
@@ -777,6 +902,14 @@
             }
             url.searchParams.set('mat', state.material);
             url.searchParams.set('env', state.env);
+            if (state.obstacles && state.obstacles.length > 0) {
+                const encodedObs = state.obstacles
+                    .map(o => `${o.type},${Math.round(o.x)},${Math.round(o.z)},${Math.round(o.rot)},${Math.round(o.L)},${Math.round(o.W)},${Math.round(o.H)}`)
+                    .join(';');
+                url.searchParams.set('obs', encodedObs);
+            } else {
+                url.searchParams.delete('obs');
+            }
 
             try {
                 window.history.replaceState({}, '', url.toString());
@@ -891,7 +1024,62 @@
             rampGroup = new THREE.Group();
             scene.add(rampGroup);
 
+            obstaclesGroup = new THREE.Group();
+            scene.add(obstaclesGroup);
+
+            raycaster = new THREE.Raycaster();
+            renderer.domElement.addEventListener('pointerdown', (e) => {
+                pointerDownPos = { x: e.clientX, y: e.clientY };
+            });
+            renderer.domElement.addEventListener('pointerup', onCanvasPointerUp);
+
             window.addEventListener('resize', onWindowResize);
+        }
+
+        function onCanvasPointerUp(e) {
+            const dx = e.clientX - pointerDownPos.x;
+            const dy = e.clientY - pointerDownPos.y;
+            if (Math.hypot(dx, dy) > 6) return; // Fue un arrastre de cámara, no un clic
+
+            const rect = renderer.domElement.getBoundingClientRect();
+            const mouse = new THREE.Vector2(
+                ((e.clientX - rect.left) / rect.width) * 2 - 1,
+                -((e.clientY - rect.top) / rect.height) * 2 + 1
+            );
+            raycaster.setFromCamera(mouse, camera);
+
+            // Modo ubicar obstáculo seleccionado haciendo clic en el piso/flat
+            if (state.placingObs && state.selectedObsId !== null) {
+                const obs = state.obstacles.find(o => o.id === state.selectedObsId);
+                if (obs) {
+                    const hits = raycaster.intersectObject(groundMesh);
+                    if (hits.length > 0) {
+                        const pt = hits[0].point;
+                        obs.x = Math.max(-600, Math.min(600, Math.round((pt.x * 100) / 10) * 10));
+                        obs.z = Math.max(-500, Math.min(500, Math.round((pt.z * 100) / 10) * 10));
+                        togglePlaceObstacleMode(false);
+                        saveState();
+                        renderObstaclesUI();
+                        rebuildObstacles();
+                        showToast(`Ubicado en X: ${obs.x} cm, Z: ${obs.z} cm`);
+                    }
+                }
+                return;
+            }
+
+            // Selección rápida haciendo clic sobre un obstáculo en 3D
+            if (obstaclesGroup && obstaclesGroup.children.length > 0) {
+                const obsHits = raycaster.intersectObjects(obstaclesGroup.children, true);
+                if (obsHits.length > 0) {
+                    let obj = obsHits[0].object;
+                    while (obj && obj.userData.obsId === undefined && obj.parent) {
+                        obj = obj.parent;
+                    }
+                    if (obj && obj.userData.obsId !== undefined) {
+                        selectObstacle(obj.userData.obsId);
+                    }
+                }
+            }
         }
 
         function onWindowResize() {
@@ -1008,12 +1196,10 @@
             const theta = Math.asin(Math.min(1.0, projX / R));
             const exitAngleDeg = theta * (180 / Math.PI);
 
-            // Dimensiones efectivas del Roll-in (ocupa un lateral del ancho W para bajar directo al flat)
             const effRollW = state.rollIn ? Math.min(state.rollInW / 100, Math.max(0.5, W - 0.6)) : 0;
             const effRollL = state.rollIn ? Math.max(state.rollInL / 100, projX + 0.2) : 0;
             const rollExtraL = state.rollIn ? Math.max(0, effRollL - projX) : 0;
 
-            // Pendiente máxima de la curva coseno del roll-in (en el punto medio)
             const rollMaxAngleDeg = state.rollIn
                 ? Math.atan((H * Math.PI) / (2 * effRollL)) * (180 / Math.PI)
                 : 0;
@@ -1069,7 +1255,6 @@
             const curveSteps = 24;
             const halfW = W / 2;
 
-            // Función auxiliar para crear un módulo lateral (Quarter) entre zMin y zMax orientado hacia +X o -X
             function buildTransitionModule(dir, startX, zMin, zMax) {
                 const segW = zMax - zMin;
                 const zCenter = (zMin + zMax) / 2;
@@ -1191,7 +1376,6 @@
                 }
             }
 
-            // Módulo Roll-in de Entrada (curva S suave sin coping, bajando directo al flat)
             function buildRollInModule(startX, zMin, zMax) {
                 const segW = zMax - zMin;
                 const zCenter = (zMin + zMax) / 2;
@@ -1364,7 +1548,6 @@
                 const freeW = pW - W;
                 const fits = freeL >= 0 && freeW >= 0;
 
-                // Centro visual de la rampa en X (si hay roll-in que sobresale hacia +X)
                 const centerX = rollExtraL / 2;
 
                 const borderColor = fits ? 0x10b981 : 0xef4444;
@@ -1381,7 +1564,6 @@
                 fillMesh.position.set(centerX, 0.012, 0);
                 rampGroup.add(fillMesh);
 
-                // Perímetro sólido del patio
                 const pts = [
                     new THREE.Vector3(centerX - pL / 2, 0.02, -pW / 2),
                     new THREE.Vector3(centerX + pL / 2, 0.02, -pW / 2),
@@ -1393,7 +1575,6 @@
                 const lineMat = new THREE.LineBasicMaterial({ color: borderColor });
                 rampGroup.add(new THREE.Line(lineGeo, lineMat));
 
-                // Estacas/postes sutiles en las 4 esquinas
                 const postGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.35, 8);
                 const postMat = new THREE.MeshStandardMaterial({ color: borderColor, roughness: 0.5 });
                 [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([sx, sz]) => {
@@ -1416,6 +1597,286 @@
                     }
                 }
             }
+
+            // Reconstruir obstáculos sincronizados con el flat y el material
+            rebuildObstacles();
+        }
+
+        // ==========================================
+        // 4. OBSTÁCULOS STREET (CAJONES, BARANDAS, KICKERS, PADS)
+        // ==========================================
+        const OBS_LABELS = {
+            box: 'Cajón (Grind Box)',
+            rail: 'Baranda (Flat Rail)',
+            kicker: 'Lanzador (Kicker)',
+            pad: 'Manual Pad'
+        };
+
+        function addObstacle(type) {
+            const defaults = {
+                box:    { L: 180, W: 60,  H: 35 },
+                rail:   { L: 200, W: 10,  H: 30 },
+                kicker: { L: 120, W: 80,  H: 35 },
+                pad:    { L: 220, W: 100, H: 20 }
+            };
+            const d = defaults[type] || defaults.box;
+            const offsetZ = (state.mode === 'miniramp' && state.F >= 260)
+                ? 0
+                : Math.round(state.W / 2 + 120);
+            const offsetX = (state.obstacles.length % 3) * 40 - 40;
+
+            const newObs = {
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                type,
+                x: offsetX,
+                z: offsetZ,
+                rot: 0,
+                L: d.L,
+                W: d.W,
+                H: d.H
+            };
+            state.obstacles.push(newObs);
+            state.selectedObsId = newObs.id;
+            saveState();
+            renderObstaclesUI();
+            rebuildObstacles();
+            showToast(`${OBS_LABELS[type]} agregado. Podés moverlo con sliders o clic en 3D.`);
+        }
+
+        function selectObstacle(id) {
+            state.selectedObsId = id;
+            togglePlaceObstacleMode(false);
+            renderObstaclesUI();
+            rebuildObstacles();
+        }
+
+        function duplicateSelectedObstacle() {
+            const src = state.obstacles.find(o => o.id === state.selectedObsId);
+            if (!src) return;
+            const copy = Object.assign({}, src, {
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                x: Math.min(600, src.x + 50),
+                z: Math.min(500, src.z + 50)
+            });
+            state.obstacles.push(copy);
+            state.selectedObsId = copy.id;
+            saveState();
+            renderObstaclesUI();
+            rebuildObstacles();
+            showToast("Obstáculo duplicado.");
+        }
+
+        function deleteSelectedObstacle(targetId) {
+            const idToDel = targetId !== undefined ? targetId : state.selectedObsId;
+            state.obstacles = state.obstacles.filter(o => o.id !== idToDel);
+            if (state.selectedObsId === idToDel) {
+                state.selectedObsId = state.obstacles.length > 0 ? state.obstacles[state.obstacles.length - 1].id : null;
+            }
+            togglePlaceObstacleMode(false);
+            saveState();
+            renderObstaclesUI();
+            rebuildObstacles();
+            showToast("Obstáculo eliminado.");
+        }
+
+        function togglePlaceObstacleMode(forceVal) {
+            const next = typeof forceVal === 'boolean' ? forceVal : !state.placingObs;
+            state.placingObs = next && state.selectedObsId !== null;
+            const banner = document.getElementById('placeModeBanner');
+            const btn = document.getElementById('btnPlaceObsMode');
+            const txt = document.getElementById('btnPlaceObsText');
+            if (banner) banner.classList.toggle('hidden', !state.placingObs);
+            if (btn) {
+                btn.className = state.placingObs
+                    ? "w-full py-1.5 px-2.5 rounded-lg bg-amber-500 text-slate-950 border border-amber-400 text-xs font-bold flex items-center justify-center gap-1.5 transition"
+                    : "w-full py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1.5 transition";
+            }
+            if (txt) {
+                txt.textContent = state.placingObs ? "Hacé clic en el 3D..." : "Ubicar haciendo clic en 3D";
+            }
+            if (renderer && renderer.domElement) {
+                renderer.domElement.style.cursor = state.placingObs ? 'crosshair' : 'grab';
+            }
+        }
+
+        function renderObstaclesUI() {
+            const listEl = document.getElementById('obstaclesList');
+            const editorEl = document.getElementById('obsEditor');
+            const badge = document.getElementById('obsCountBadge');
+            if (!listEl || !editorEl) return;
+
+            if (badge) badge.textContent = state.obstacles.length;
+            listEl.innerHTML = '';
+
+            state.obstacles.forEach((obs, idx) => {
+                const isSel = obs.id === state.selectedObsId;
+                const row = document.createElement('div');
+                row.className = `flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer border transition ${
+                    isSel
+                        ? 'bg-amber-500/15 border-amber-500/60 text-amber-300 font-semibold'
+                        : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:bg-slate-800/70'
+                }`;
+                row.onclick = () => selectObstacle(obs.id);
+                row.innerHTML = `
+                    <span class="truncate">${idx + 1}. ${OBS_LABELS[obs.type] || obs.type} <span class="text-[10px] text-slate-400 font-mono">(${obs.L}×${obs.H})</span></span>
+                    <button onclick="event.stopPropagation(); deleteSelectedObstacle(${obs.id})" class="p-0.5 text-slate-400 hover:text-red-400" title="Eliminar">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                `;
+                listEl.appendChild(row);
+            });
+
+            const sel = state.obstacles.find(o => o.id === state.selectedObsId);
+            if (!sel) {
+                editorEl.classList.add('hidden');
+                initLucideIcons();
+                return;
+            }
+
+            editorEl.classList.remove('hidden');
+            document.getElementById('obsEditorTitle').textContent = OBS_LABELS[sel.type] || 'Obstáculo';
+            document.getElementById('inputObsX').value = sel.x;
+            document.getElementById('valObsX').textContent = `${sel.x} cm`;
+            document.getElementById('inputObsZ').value = sel.z;
+            document.getElementById('valObsZ').textContent = `${sel.z} cm`;
+            document.getElementById('inputObsRot').value = sel.rot;
+            document.getElementById('valObsRot').textContent = `${sel.rot}°`;
+            document.getElementById('inputObsL').value = sel.L;
+            document.getElementById('inputObsW').value = sel.W;
+            document.getElementById('inputObsH').value = sel.H;
+
+            const wrapW = document.getElementById('obsWrapW');
+            if (wrapW) wrapW.classList.toggle('opacity-40', sel.type === 'rail');
+            document.getElementById('inputObsW').disabled = sel.type === 'rail';
+
+            initLucideIcons();
+        }
+
+        function rebuildObstacles() {
+            if (!obstaclesGroup) return;
+            clearGroup(obstaclesGroup);
+            if (!state.obstacles || state.obstacles.length === 0) return;
+
+            const surfTex = createProceduralTexture(state.material);
+            const bodyMat = new THREE.MeshStandardMaterial({
+                map: surfTex,
+                roughness: 0.72,
+                metalness: 0.08
+            });
+            const concreteMat = new THREE.MeshStandardMaterial({
+                color: 0x94a3b8,
+                roughness: 0.85,
+                metalness: 0.05
+            });
+            const metalMat = new THREE.MeshStandardMaterial({
+                color: 0xe2e8f0,
+                metalness: 0.85,
+                roughness: 0.22
+            });
+            const darkSteelMat = new THREE.MeshStandardMaterial({
+                color: 0x38bdf8,
+                metalness: 0.65,
+                roughness: 0.3
+            });
+
+            const halfF = (state.F / 100) / 2;
+            const halfW = (state.W / 100) / 2;
+            const B = state.B / 100;
+
+            state.obstacles.forEach(obs => {
+                const g = new THREE.Group();
+                g.userData.obsId = obs.id;
+
+                const L = Math.max(0.3, obs.L / 100);
+                const W = Math.max(0.2, obs.W / 100);
+                const H = Math.max(0.12, obs.H / 100);
+                const px = obs.x / 100;
+                const pz = obs.z / 100;
+
+                const onFlat = state.mode === 'miniramp' && Math.abs(px) <= halfF && Math.abs(pz) <= halfW;
+                const baseY = onFlat ? B : 0;
+
+                if (obs.type === 'box' || obs.type === 'pad') {
+                    const mat = obs.type === 'pad' ? concreteMat : bodyMat;
+                    const boxMesh = new THREE.Mesh(new THREE.BoxGeometry(L, H, W), mat);
+                    boxMesh.position.y = H / 2;
+                    boxMesh.castShadow = true;
+                    boxMesh.receiveShadow = true;
+                    g.add(boxMesh);
+
+                    const edgeGeo = new THREE.BoxGeometry(L + 0.008, 0.025, 0.025);
+                    [-1, 1].forEach(side => {
+                        const edge = new THREE.Mesh(edgeGeo, metalMat);
+                        edge.position.set(0, H - 0.005, side * (W / 2 - 0.005));
+                        edge.castShadow = true;
+                        g.add(edge);
+                    });
+                } else if (obs.type === 'rail') {
+                    const barGeo = new THREE.CylinderGeometry(0.024, 0.024, L, 16);
+                    barGeo.rotateZ(Math.PI / 2);
+                    const bar = new THREE.Mesh(barGeo, darkSteelMat);
+                    bar.position.y = H;
+                    bar.castShadow = true;
+                    g.add(bar);
+
+                    const legGeo = new THREE.BoxGeometry(0.04, H, 0.04);
+                    const footGeo = new THREE.BoxGeometry(0.12, 0.012, 0.36);
+                    [-1, 1].forEach(side => {
+                        const lx = side * Math.max(0.15, L / 2 - 0.18);
+                        const leg = new THREE.Mesh(legGeo, metalMat);
+                        leg.position.set(lx, H / 2, 0);
+                        leg.castShadow = true;
+                        g.add(leg);
+
+                        const foot = new THREE.Mesh(footGeo, metalMat);
+                        foot.position.set(lx, 0.006, 0);
+                        foot.receiveShadow = true;
+                        g.add(foot);
+                    });
+                } else if (obs.type === 'kicker') {
+                    const shape = new THREE.Shape();
+                    shape.moveTo(-L / 2, 0);
+                    shape.lineTo(L / 2, 0);
+                    shape.lineTo(L / 2, H);
+                    const steps = 14;
+                    for (let i = steps - 1; i >= 0; i--) {
+                        const t = i / steps;
+                        const kx = -L / 2 + t * L;
+                        const ky = H * Math.pow(t, 1.35);
+                        shape.lineTo(kx, ky);
+                    }
+                    shape.closePath();
+
+                    const extrudeGeo = new THREE.ExtrudeGeometry(shape, { depth: W, bevelEnabled: false });
+                    extrudeGeo.translate(0, 0, -W / 2);
+                    const kickerMesh = new THREE.Mesh(extrudeGeo, bodyMat);
+                    kickerMesh.castShadow = true;
+                    kickerMesh.receiveShadow = true;
+                    g.add(kickerMesh);
+
+                    const plate = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.006, W), metalMat);
+                    plate.position.set(-L / 2 + 0.05, 0.004, 0);
+                    g.add(plate);
+                }
+
+                if (obs.id === state.selectedObsId) {
+                    const fw = obs.type === 'rail' ? 0.44 : (W + 0.14);
+                    const fl = L + 0.14;
+                    const pts = [
+                        new THREE.Vector3(-fl / 2, 0.025, -fw / 2),
+                        new THREE.Vector3(fl / 2, 0.025, -fw / 2),
+                        new THREE.Vector3(fl / 2, 0.025, fw / 2),
+                        new THREE.Vector3(-fl / 2, 0.025, fw / 2)
+                    ];
+                    const ringGeo = new THREE.BufferGeometry().setFromPoints(pts);
+                    const ringMat = new THREE.LineBasicMaterial({ color: 0xf59e0b });
+                    g.add(new THREE.LineLoop(ringGeo, ringMat));
+                }
+
+                g.position.set(px, baseY, pz);
+                g.rotation.y = -(obs.rot * Math.PI) / 180;
+                obstaclesGroup.add(g);
+            });
         }
 
         function syncModeUI(mode) {
@@ -1527,6 +1988,35 @@
                 state.human = e.target.checked;
                 rebuild3DModel();
             });
+
+            // Controles del obstáculo seleccionado
+            const bindObsInput = (inputId, prop, labelId, suffix, minVal, maxVal) => {
+                const el = document.getElementById(inputId);
+                if (!el) return;
+                el.addEventListener('input', (e) => {
+                    const sel = state.obstacles.find(o => o.id === state.selectedObsId);
+                    if (!sel) return;
+                    let val = parseInt(e.target.value, 10);
+                    if (isNaN(val)) return;
+                    if (minVal !== undefined) val = Math.max(minVal, val);
+                    if (maxVal !== undefined) val = Math.min(maxVal, val);
+                    sel[prop] = val;
+                    if (labelId) {
+                        const lbl = document.getElementById(labelId);
+                        if (lbl) lbl.textContent = `${val}${suffix}`;
+                    }
+                    saveState();
+                    rebuildObstacles();
+                    if (prop === 'L' || prop === 'H') renderObstaclesUI();
+                });
+            };
+
+            bindObsInput('inputObsX', 'x', 'valObsX', ' cm');
+            bindObsInput('inputObsZ', 'z', 'valObsZ', ' cm');
+            bindObsInput('inputObsRot', 'rot', 'valObsRot', '°');
+            bindObsInput('inputObsL', 'L', null, '', 40, 500);
+            bindObsInput('inputObsW', 'W', null, '', 20, 300);
+            bindObsInput('inputObsH', 'H', null, '', 15, 150);
         }
 
         function applyStateToUI() {
