@@ -637,6 +637,15 @@
                         <span id="budgetSubAll" class="font-mono font-bold text-emerald-400">$ 0</span>
                     </div>
                 </div>
+
+                <!-- Selector por obstáculo individual (visible en pestaña Solo Obstáculos) -->
+                <div id="budgetObsFilterWrap" class="hidden space-y-1.5 bg-slate-950/70 border border-slate-800 rounded-xl p-2.5">
+                    <span class="block text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+                        Ver materiales de todos juntos o fabricar de a uno:
+                    </span>
+                    <div id="budgetObsChips" class="flex flex-wrap gap-1.5"></div>
+                </div>
+
                 <div class="overflow-x-auto rounded-xl border border-slate-800">
                     <table class="w-full text-left text-xs text-slate-300">
                         <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
@@ -732,6 +741,7 @@
             svgObsId: null,   // ID del obstáculo seleccionado en el modal SVG
             svgDeductPly: true, // Descontar 18 mm (2x9mm) y marcar muesca coping en SVG
             budgetTab: 'all', // 'all' | 'ramp' | 'obstacles'
+            budgetObsId: 'all', // 'all' | obs.id (filtro individual dentro de Solo Obstáculos)
             material: 'wood', // 'wood' | 'retro' | 'concrete' | 'blueprint'
             env: 'studio',    // 'studio' | 'sunset' | 'park' | 'night' | 'blueprint'
             xray: false,
@@ -2793,7 +2803,12 @@
             renderBudgetTable();
         }
 
-        function getBudgetItems(scope) {
+        function setBudgetObsFilter(obsId) {
+            state.budgetObsId = obsId === 'all' ? 'all' : Number(obsId);
+            renderBudgetTable();
+        }
+
+        function getBudgetItems(scope, obsIdFilter) {
             const targetScope = scope || state.budgetTab || 'all';
             const curr = state.currency;
             const p = state.prices[curr];
@@ -2846,7 +2861,11 @@
 
             // --- MATERIALES DE OBSTÁCULOS STREET ---
             if ((targetScope === 'all' || targetScope === 'obstacles') && state.obstacles && state.obstacles.length > 0) {
-                state.obstacles.forEach(obs => {
+                const targetObs = (targetScope === 'obstacles' && obsIdFilter && obsIdFilter !== 'all')
+                    ? state.obstacles.filter(o => o.id === obsIdFilter)
+                    : state.obstacles;
+
+                targetObs.forEach(obs => {
                     const oL = obs.L / 100;
                     const oW = obs.W / 100;
                     const oH = obs.H / 100;
@@ -2924,15 +2943,22 @@
             return items;
         }
 
-        function calcScopeTotal(scope) {
-            return getBudgetItems(scope).reduce((acc, item) => acc + item.qty * item.price, 0);
+        function calcScopeTotal(scope, obsIdFilter) {
+            return getBudgetItems(scope, obsIdFilter).reduce((acc, item) => acc + item.qty * item.price, 0);
         }
 
         function renderBudgetTable() {
             const body = document.getElementById('budgetTableBody');
             const obsCountEl = document.getElementById('budgetObsCount');
+            const obsFilterWrap = document.getElementById('budgetObsFilterWrap');
+            const obsChipsEl = document.getElementById('budgetObsChips');
             const obsCount = state.obstacles ? state.obstacles.length : 0;
             if (obsCountEl) obsCountEl.textContent = obsCount;
+
+            // Validar si el obstáculo filtrado sigue existiendo
+            if (state.budgetObsId !== 'all' && !state.obstacles.some(o => o.id === state.budgetObsId)) {
+                state.budgetObsId = 'all';
+            }
 
             // Actualizar estilos de pestañas
             const btnAll = document.getElementById('btnBudgetTabAll');
@@ -2956,7 +2982,44 @@
 
             const curr = state.currency;
             const sym = curr === 'ARS' ? '$' : 'US$';
-            const items = getBudgetItems(state.budgetTab);
+
+            // Mostrar chips de selección individual cuando estamos en Solo Obstáculos
+            if (obsFilterWrap && obsChipsEl) {
+                const showChips = state.budgetTab === 'obstacles' && obsCount > 0;
+                obsFilterWrap.classList.toggle('hidden', !showChips);
+                if (showChips) {
+                    const allObsTotal = calcScopeTotal('obstacles', 'all');
+                    let chipsHtml = `
+                        <button onclick="setBudgetObsFilter('all')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition flex items-center gap-1.5 ${
+                            state.budgetObsId === 'all'
+                                ? 'bg-sky-500 text-slate-950 border-sky-400'
+                                : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
+                        }">
+                            <span>Todos juntos</span>
+                            <span id="obsChipPrice_all" class="font-mono text-[11px] opacity-90">${sym} ${allObsTotal.toLocaleString()}</span>
+                        </button>
+                    `;
+                    state.obstacles.forEach((obs, idx) => {
+                        const indTotal = calcScopeTotal('obstacles', obs.id);
+                        const isSel = state.budgetObsId === obs.id;
+                        const shortDim = obs.type === 'rail' ? `${obs.L}×${obs.H}` : `${obs.L}×${obs.W}×${obs.H}`;
+                        chipsHtml += `
+                            <button onclick="setBudgetObsFilter(${obs.id})" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition flex items-center gap-1.5 ${
+                                isSel
+                                    ? 'bg-sky-500 text-slate-950 border-sky-400'
+                                    : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
+                            }">
+                                <span>${idx + 1}. ${OBS_LABELS[obs.type]} (${shortDim})</span>
+                                <span id="obsChipPrice_${obs.id}" class="font-mono text-[11px] opacity-90">${sym} ${indTotal.toLocaleString()}</span>
+                            </button>
+                        `;
+                    });
+                    obsChipsEl.innerHTML = chipsHtml;
+                }
+            }
+
+            const activeObsFilter = state.budgetTab === 'obstacles' ? state.budgetObsId : 'all';
+            const items = getBudgetItems(state.budgetTab, activeObsFilter);
 
             body.innerHTML = '';
 
@@ -3009,40 +3072,70 @@
             const curr = state.currency;
             const sym = curr === 'ARS' ? '$' : 'US$';
             const totalRamp = calcScopeTotal('ramp');
-            const totalObs = calcScopeTotal('obstacles');
+            const totalObsAll = calcScopeTotal('obstacles', 'all');
             const totalAll = calcScopeTotal('all');
 
             const subRampEl = document.getElementById('budgetSubRamp');
             const subObsEl = document.getElementById('budgetSubObs');
             const subAllEl = document.getElementById('budgetSubAll');
             if (subRampEl) subRampEl.textContent = `${sym} ${totalRamp.toLocaleString()}`;
-            if (subObsEl) subObsEl.textContent = `${sym} ${totalObs.toLocaleString()}`;
+            if (subObsEl) subObsEl.textContent = `${sym} ${totalObsAll.toLocaleString()}`;
             if (subAllEl) subAllEl.textContent = `${sym} ${totalAll.toLocaleString()}`;
 
-            const labelEl = document.getElementById('budgetTotalLabel');
-            const activeTotal = state.budgetTab === 'ramp'
-                ? totalRamp
-                : (state.budgetTab === 'obstacles' ? totalObs : totalAll);
-
-            if (labelEl) {
-                labelEl.textContent = state.budgetTab === 'ramp'
-                    ? 'Total Estimado (Solo Rampa)'
-                    : (state.budgetTab === 'obstacles'
-                        ? 'Total Estimado (Solo Obstáculos)'
-                        : 'Total Estimado (Rampa + Obstáculos)');
+            // Actualizar también los montos de cada chip individual en vivo
+            const chipAllEl = document.getElementById('obsChipPrice_all');
+            if (chipAllEl) chipAllEl.textContent = `${sym} ${totalObsAll.toLocaleString()}`;
+            if (state.obstacles) {
+                state.obstacles.forEach(obs => {
+                    const chipEl = document.getElementById(`obsChipPrice_${obs.id}`);
+                    if (chipEl) chipEl.textContent = `${sym} ${calcScopeTotal('obstacles', obs.id).toLocaleString()}`;
+                });
             }
+
+            const labelEl = document.getElementById('budgetTotalLabel');
+            let activeTotal = totalAll;
+            let activeLabel = 'Total Estimado (Rampa + Obstáculos)';
+
+            if (state.budgetTab === 'ramp') {
+                activeTotal = totalRamp;
+                activeLabel = 'Total Estimado (Solo Rampa)';
+            } else if (state.budgetTab === 'obstacles') {
+                if (state.budgetObsId !== 'all') {
+                    const selObs = state.obstacles.find(o => o.id === state.budgetObsId);
+                    if (selObs) {
+                        activeTotal = calcScopeTotal('obstacles', selObs.id);
+                        const dimTxt = selObs.type === 'rail' ? `${selObs.L}×${selObs.H} cm` : `${selObs.L}×${selObs.W}×${selObs.H} cm`;
+                        activeLabel = `Total Estimado (${OBS_LABELS[selObs.type]} ${dimTxt})`;
+                    } else {
+                        activeTotal = totalObsAll;
+                        activeLabel = 'Total Estimado (Solo Obstáculos)';
+                    }
+                } else {
+                    activeTotal = totalObsAll;
+                    activeLabel = 'Total Estimado (Todos los Obstáculos)';
+                }
+            }
+
+            if (labelEl) labelEl.textContent = activeLabel;
             document.getElementById('budgetGrandTotal').textContent = `${sym} ${activeTotal.toLocaleString()}`;
         }
 
         function copyBudgetToClipboard() {
-            const items = getBudgetItems(state.budgetTab);
+            const activeObsFilter = state.budgetTab === 'obstacles' ? state.budgetObsId : 'all';
+            const items = getBudgetItems(state.budgetTab, activeObsFilter);
             const curr = state.currency;
             const sym = curr === 'ARS' ? '$' : 'US$';
             const obsCount = state.obstacles ? state.obstacles.length : 0;
+            const singleObs = (state.budgetTab === 'obstacles' && activeObsFilter !== 'all')
+                ? state.obstacles.find(o => o.id === activeObsFilter)
+                : null;
 
             let title = 'PRESUPUESTO SKATEPARK';
             if (state.budgetTab === 'ramp') {
                 title = `PRESUPUESTO SOLO RAMPA (${state.mode.toUpperCase()}${state.rollIn ? ' + ROLL-IN' : ''})`;
+            } else if (singleObs) {
+                const dimTxt = singleObs.type === 'rail' ? `${singleObs.L}×${singleObs.H}cm` : `${singleObs.L}×${singleObs.W}×${singleObs.H}cm`;
+                title = `PRESUPUESTO INDIVIDUAL: ${OBS_LABELS[singleObs.type].toUpperCase()} (${dimTxt})`;
             } else if (state.budgetTab === 'obstacles') {
                 title = `PRESUPUESTO SOLO OBSTÁCULOS (${obsCount} u.)`;
             } else {
@@ -3053,7 +3146,7 @@
             if (state.budgetTab === 'all' || state.budgetTab === 'ramp') {
                 text += `Rampa: ${state.H}cm Alto | ${state.R}cm Radio | ${state.W}cm Ancho${state.mode === 'miniramp' ? ` | ${state.F}cm Flat` : ''}${state.rollIn ? ` | Roll-in ${state.rollInW}×${state.rollInL}cm` : ''}\n`;
             }
-            if ((state.budgetTab === 'all' || state.budgetTab === 'obstacles') && obsCount > 0) {
+            if ((state.budgetTab === 'all' || (state.budgetTab === 'obstacles' && !singleObs)) && obsCount > 0) {
                 const obsSummary = state.obstacles.map(o => `${OBS_LABELS[o.type]} (${o.L}×${o.H}cm)`).join(', ');
                 text += `Obstáculos: ${obsSummary}\n`;
             }
