@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maqueta Skate Pro v8.1 - Diseñador 3D de Rampas</title>
+    <title>Maqueta Skate Pro v8.2 - Diseñador 3D de Rampas</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -84,7 +84,7 @@
                     <i data-lucide="waves" class="w-4 h-4 text-slate-950"></i>
                 </div>
                 <h1 class="font-bold text-sm sm:text-lg tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                    Maqueta Skate Pro <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono border border-amber-500/30">v8.1</span>
+                    Maqueta Skate Pro <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono border border-amber-500/30">v8.2</span>
                 </h1>
             </div>
         </div>
@@ -250,6 +250,39 @@
                     </div>
                 </div>
 
+                <!-- Límites del Patio / Galpón -->
+                <div class="space-y-3 pt-2 border-t border-slate-800">
+                    <label class="flex items-center justify-between text-xs font-semibold text-slate-200 cursor-pointer bg-slate-950/60 px-3 py-2 rounded-xl border border-slate-800">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            Límites del Patio
+                        </span>
+                        <input id="chkPatio" type="checkbox" class="accent-amber-500 w-4 h-4 rounded">
+                    </label>
+
+                    <div id="patioControls" class="hidden space-y-3 pl-1">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-300">Largo Patio</span>
+                                <span id="valPatioL" class="font-mono font-bold text-emerald-400">700 cm</span>
+                            </div>
+                            <input id="inputPatioL" type="range" min="300" max="1500" step="20" value="700" class="w-full">
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-300">Ancho Patio</span>
+                                <span id="valPatioW" class="font-mono font-bold text-emerald-400">400 cm</span>
+                            </div>
+                            <input id="inputPatioW" type="range" min="200" max="1000" step="20" value="400" class="w-full">
+                        </div>
+
+                        <div id="patioStatus" class="text-[11px] bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 rounded-lg px-2.5 py-1.5 font-medium">
+                            Verificando espacio...
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Estilo y Estructura -->
                 <div class="space-y-3 pt-2 border-t border-slate-800">
                     <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Visualización</label>
@@ -299,28 +332,30 @@
             <div id="canvasContainer" class="w-full h-full"></div>
 
             <!-- Live Tech Specs HUD (Top Right) -->
-            <div class="absolute top-3 right-3 bg-slate-900/85 backdrop-blur-md border border-slate-800 rounded-2xl p-3 shadow-xl pointer-events-auto max-w-[230px] sm:max-w-xs space-y-2">
-                <div class="flex items-center justify-between gap-3">
+            <div class="absolute top-3 right-3 bg-slate-900/85 backdrop-blur-md border border-slate-800 rounded-2xl p-3 shadow-xl pointer-events-auto max-w-[240px] sm:max-w-xs space-y-2">
+                <div class="flex items-center justify-between gap-2">
                     <span id="modeBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
                         Miniramp
                     </span>
-                    <button onclick="resetCamera()" class="text-[11px] text-slate-400 hover:text-slate-100 flex items-center gap-1 transition" title="Centrar cámara">
-                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Centrar
-                    </button>
+                    <div class="flex items-center gap-1 bg-slate-950/90 p-0.5 rounded-lg border border-slate-800">
+                        <button onclick="setCameraView('3d')" class="px-1.5 py-0.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 hover:text-amber-400 transition" title="Vista 3D Perspectiva">3D</button>
+                        <button onclick="setCameraView('side')" class="px-1.5 py-0.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 hover:text-amber-400 transition" title="Vista Perfil Lateral">Perfil</button>
+                        <button onclick="setCameraView('top')" class="px-1.5 py-0.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 hover:text-amber-400 transition" title="Vista Planta Superior">Planta</button>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-2 text-center pt-1">
-                    <div class="bg-slate-950/80 rounded-lg p-1.5 border border-slate-800/80">
-                        <span class="text-[9px] text-slate-400 uppercase block">Largo</span>
+                <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-800/80 text-center">
+                    <div>
+                        <span class="block text-[9px] uppercase text-slate-400">Largo</span>
                         <span id="statTotalL" class="font-mono text-xs font-bold text-slate-100">0.00 m</span>
                     </div>
-                    <div class="bg-slate-950/80 rounded-lg p-1.5 border border-slate-800/80">
-                        <span class="text-[9px] text-slate-400 uppercase block">Alto</span>
+                    <div>
+                        <span class="block text-[9px] uppercase text-slate-400">Alto</span>
                         <span id="statTotalH" class="font-mono text-xs font-bold text-slate-100">0.00 m</span>
                     </div>
-                    <div class="bg-slate-950/80 rounded-lg p-1.5 border border-slate-800/80">
-                        <span class="text-[9px] text-slate-400 uppercase block">Salida</span>
-                        <span id="statAngle" class="font-mono text-xs font-bold text-amber-400">0°</span>
+                    <div>
+                        <span class="block text-[9px] uppercase text-slate-400">Salida</span>
+                        <span id="statAngle" class="font-mono text-xs font-bold text-amber-400">0.0°</span>
                     </div>
                 </div>
 
@@ -362,6 +397,22 @@
             </div>
 
             <div class="p-4 flex-1 overflow-y-auto bg-slate-950 space-y-4">
+                <!-- Selector de Costilla (Curva vs Roll-in) + Opciones de Carpintería -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 rounded-xl p-2.5">
+                    <div class="flex items-center gap-1.5">
+                        <button id="btnSvgTabCurve" onclick="setSvgTab('curve')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition">
+                            Costilla Curva
+                        </button>
+                        <button id="btnSvgTabRollIn" onclick="setSvgTab('rollin')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
+                            Costilla Roll-in
+                        </button>
+                    </div>
+                    <label id="svgPlyDeductWrap" class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+                        <input id="chkSvgDeductPly" type="checkbox" checked onchange="toggleSvgPlyDeduction(this.checked)" class="accent-amber-500 w-4 h-4 rounded">
+                        <span>Descontar 18 mm (2×9mm) y marcar muesca coping Ø50 mm</span>
+                    </label>
+                </div>
+
                 <!-- Alerta de ajuste en placa estándar -->
                 <div id="svgFitAlert" class="hidden flex items-center gap-2 p-3 rounded-xl bg-amber-950/70 border border-amber-500/60 text-amber-200 text-xs">
                     <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 shrink-0"></i>
@@ -407,7 +458,7 @@
                                 <tr>
                                     <th class="p-2">Avance X (cm)</th>
                                     <th class="p-2">Altura Curva Y (cm)</th>
-                                    <th class="p-2 text-amber-400">Altura desde Suelo (Y + B)</th>
+                                    <th id="diyColGround" class="p-2 text-amber-400">Altura Corte Costilla (Y + B - 1.8)</th>
                                 </tr>
                             </thead>
                             <tbody id="diyCoordsBody" class="divide-y divide-slate-800/70"></tbody>
@@ -535,6 +586,11 @@
             rollIn: false,    // Roll-in lateral de entrada
             rollInW: 100,     // Ancho del roll-in (cm)
             rollInL: 200,     // Largo horizontal de bajada del roll-in (cm)
+            patioEnabled: false, // Límites del patio/galpón en 3D
+            patioL: 700,      // Largo del patio (cm)
+            patioW: 400,      // Ancho del patio (cm)
+            svgTab: 'curve',  // 'curve' | 'rollin'
+            svgDeductPly: true, // Descontar 18 mm (2x9mm) y marcar muesca coping en SVG
             material: 'wood', // 'wood' | 'retro' | 'concrete' | 'blueprint'
             env: 'studio',    // 'studio' | 'sunset' | 'park' | 'night' | 'blueprint'
             xray: false,
@@ -542,41 +598,40 @@
             human: true,
             currency: 'ARS',
             prices: {
-                ARS: { p18: 48000, p9: 29000, joist: 6500, coping: 42000, screws: 18000 },
-                USD: { p18: 40, p9: 24, joist: 5.5, coping: 35, screws: 15 }
+                ARS: { p18: 48000, p9: 28000, joist: 7500, coping: 32000, screws: 12000 },
+                USD: { p18: 45, p9: 26, joist: 7, coping: 30, screws: 11 }
             }
         };
 
-        const PRESETS = {
-            micro:    { mode: 'miniramp', H: 45,  R: 150, W: 244, F: 200, D: 60,  B: 10 },
-            standard: { mode: 'miniramp', H: 90,  R: 185, W: 244, F: 240, D: 80,  B: 15 },
-            quarter:  { mode: 'quarter',  H: 75,  R: 170, W: 180, F: 200, D: 70,  B: 10 },
-            halfpipe: { mode: 'miniramp', H: 150, R: 210, W: 366, F: 280, D: 100, B: 15 }
-        };
-
-        // Variables Three.js
+        // Variables globales de Three.js
         let scene, camera, renderer, controls, rampGroup, groundMesh, gridHelper;
-        let sidebarOpen = window.innerWidth >= 768;
+        let toastTimer = null;
 
         // ==========================================
-        // 2. INICIALIZACIÓN Y PERSISTENCIA
+        // 2. INICIALIZACIÓN Y UTILIDADES UI
         // ==========================================
-        window.addEventListener('DOMContentLoaded', () => {
+        window.onload = function () {
             loadSavedState();
             const loadedFromURL = loadStateFromURL();
             initLucideIcons();
-            updateSidebarVisibility();
             initThreeJS();
             setupEventListeners();
             applyStateToUI();
             syncModeUI(state.mode);
             applyEnvironment();
             rebuild3DModel();
+            resetCamera();
             animate();
             if (loadedFromURL) {
                 showToast("Diseño cargado desde el enlace compartido.");
             }
-        });
+        };
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (controls) controls.update();
+            if (renderer && scene && camera) renderer.render(scene, camera);
+        }
 
         function initLucideIcons() {
             if (window.lucide) lucide.createIcons();
@@ -585,30 +640,50 @@
         function showToast(msg) {
             const toast = document.getElementById('toast');
             const msgEl = document.getElementById('toastMsg');
+            if (!toast || !msgEl) return;
             msgEl.textContent = msg;
             toast.classList.remove('hidden');
-            clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(() => toast.classList.add('hidden'), 3000);
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar) return;
+            if (window.innerWidth < 768) {
+                sidebar.classList.toggle('-translate-x-full');
+            } else {
+                sidebar.classList.toggle('hidden');
+            }
+            setTimeout(onWindowResize, 310);
         }
 
         function copyTextToClipboard(text, successMsg) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
             try {
-                document.execCommand('copy');
-                showToast(successMsg);
-            } catch (err) {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(() => showToast(successMsg));
-                } else {
-                    showToast("No se pudo copiar automáticamente.");
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok) {
+                    showToast(successMsg || "Copiado al portapapeles.");
+                    return;
                 }
+            } catch (e) {}
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text)
+                    .then(() => showToast(successMsg || "Copiado al portapapeles."))
+                    .catch(() => showToast("No se pudo copiar automáticamente."));
+            } else {
+                showToast("No se pudo copiar automáticamente.");
             }
-            document.body.removeChild(textarea);
         }
 
         function saveState() {
@@ -616,6 +691,7 @@
                 localStorage.setItem('skate_ramp_v8_state', JSON.stringify({
                     H: state.H, R: state.R, W: state.W, F: state.F, D: state.D, B: state.B,
                     rollIn: state.rollIn, rollInW: state.rollInW, rollInL: state.rollInL,
+                    patioEnabled: state.patioEnabled, patioL: state.patioL, patioW: state.patioW,
                     mode: state.mode, material: state.material, env: state.env,
                     prices: state.prices, currency: state.currency
                 }));
@@ -631,7 +707,7 @@
                         state.prices.ARS = Object.assign(state.prices.ARS, parsed.prices.ARS || {});
                         state.prices.USD = Object.assign(state.prices.USD, parsed.prices.USD || {});
                     }
-                    ['H', 'R', 'W', 'F', 'D', 'B', 'rollIn', 'rollInW', 'rollInL', 'mode', 'material', 'env', 'currency'].forEach(k => {
+                    ['H', 'R', 'W', 'F', 'D', 'B', 'rollIn', 'rollInW', 'rollInL', 'patioEnabled', 'patioL', 'patioW', 'mode', 'material', 'env', 'currency'].forEach(k => {
                         if (parsed[k] !== undefined) state[k] = parsed[k];
                     });
                 }
@@ -646,7 +722,7 @@
                 const params = new URLSearchParams(window.location.search);
                 if (!params.has('H') && !params.has('R') && !params.has('W')) return false;
 
-                ['H', 'R', 'W', 'F', 'D', 'B', 'rollInW', 'rollInL'].forEach(k => {
+                ['H', 'R', 'W', 'F', 'D', 'B', 'rollInW', 'rollInL', 'patioL', 'patioW'].forEach(k => {
                     if (params.has(k)) {
                         const v = parseInt(params.get(k), 10);
                         if (!isNaN(v) && v >= 0) state[k] = v;
@@ -654,6 +730,9 @@
                 });
                 if (params.has('rollIn')) {
                     state.rollIn = params.get('rollIn') === '1' || params.get('rollIn') === 'true';
+                }
+                if (params.has('patio')) {
+                    state.patioEnabled = params.get('patio') === '1' || params.get('patio') === 'true';
                 }
                 if (params.get('mode') === 'miniramp' || params.get('mode') === 'quarter') {
                     state.mode = params.get('mode');
@@ -687,6 +766,15 @@
                 url.searchParams.delete('rollInW');
                 url.searchParams.delete('rollInL');
             }
+            if (state.patioEnabled) {
+                url.searchParams.set('patio', '1');
+                url.searchParams.set('patioL', state.patioL);
+                url.searchParams.set('patioW', state.patioW);
+            } else {
+                url.searchParams.delete('patio');
+                url.searchParams.delete('patioL');
+                url.searchParams.delete('patioW');
+            }
             url.searchParams.set('mat', state.material);
             url.searchParams.set('env', state.env);
 
@@ -697,12 +785,37 @@
             copyTextToClipboard(url.toString(), "Link del diseño copiado. ¡Mandáselo a tu amigo!");
         }
 
+        function setCameraView(view) {
+            if (!camera || !controls) return;
+            const F = (state.mode === 'miniramp' ? state.F : 0) / 100;
+            const W = state.W / 100;
+            const refL = state.patioEnabled ? Math.max(F + 4.5, state.patioL / 100) : (F + 4.5);
+            const refW = state.patioEnabled ? Math.max(W + 2, state.patioW / 100) : (W + 2);
+            const dist = Math.max(6.5, refL * 0.95, refW * 1.15);
+
+            if (view === 'side') {
+                camera.position.set(0, Math.max(1.2, (state.H + state.B) / 100), dist * 1.15);
+                controls.target.set(0, Math.max(0.5, (state.H + state.B) / 200), 0);
+            } else if (view === 'top') {
+                camera.position.set(0, Math.max(8, dist * 1.35), 0.01);
+                controls.target.set(0, 0, 0);
+            } else {
+                camera.position.set(dist * 0.72, Math.max(3.5, dist * 0.5), dist * 0.85);
+                controls.target.set(0, 0.6, 0);
+            }
+            controls.update();
+        }
+
+        function resetCamera() {
+            setCameraView('3d');
+        }
+
         function saveApiKey() {
-            const val = (document.getElementById('geminiApiKeyInput')?.value || '').trim();
             try {
-                if (val) {
-                    localStorage.setItem('skate_ramp_v8_apikey', val);
-                    showToast("API Key guardada localmente en tu navegador.");
+                const key = (document.getElementById('geminiApiKeyInput')?.value || '').trim();
+                if (key) {
+                    localStorage.setItem('skate_ramp_v8_apikey', key);
+                    showToast("API Key guardada en este navegador.");
                 } else {
                     localStorage.removeItem('skate_ramp_v8_apikey');
                     showToast("API Key eliminada.");
@@ -789,15 +902,6 @@
             camera.aspect = w / h;
             camera.updateProjectionMatrix();
             renderer.setSize(w, h);
-        }
-
-        function resetCamera() {
-            if (!camera || !controls) return;
-            const F = (state.mode === 'miniramp' ? state.F : 0) / 100;
-            const dist = Math.max(6.5, F * 0.95 + 4.5);
-            camera.position.set(dist * 0.78, Math.max(3.5, dist * 0.52), dist * 0.9);
-            controls.target.set(0, 0.6, 0);
-            controls.update();
         }
 
         function createProceduralTexture(type) {
@@ -1251,86 +1355,66 @@
                 }
                 rampGroup.add(humanGroup);
             }
-        }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            if (controls) controls.update();
-            if (renderer && scene && camera) renderer.render(scene, camera);
-        }
+            // Límites del Patio / Galpón en el piso
+            if (state.patioEnabled) {
+                const pL = state.patioL / 100;
+                const pW = state.patioW / 100;
+                const freeL = pL - totalL;
+                const freeW = pW - W;
+                const fits = freeL >= 0 && freeW >= 0;
 
-        // ==========================================
-        // 4. EVENTOS DE UI Y CONTROLES
-        // ==========================================
-        function setupEventListeners() {
-            const bindSlider = (id, key, labelId) => {
-                const el = document.getElementById(id);
-                el.addEventListener('input', (e) => {
-                    state[key] = parseInt(e.target.value, 10);
-                    document.getElementById(labelId).textContent = `${state[key]} cm`;
-                    onParamChange();
+                // Centro visual de la rampa en X (si hay roll-in que sobresale hacia +X)
+                const centerX = rollExtraL / 2;
+
+                const borderColor = fits ? 0x10b981 : 0xef4444;
+                const fillGeo = new THREE.PlaneGeometry(pL, pW);
+                const fillMat = new THREE.MeshBasicMaterial({
+                    color: borderColor,
+                    transparent: true,
+                    opacity: fits ? 0.08 : 0.14,
+                    side: THREE.DoubleSide,
+                    depthWrite: false
                 });
-            };
+                const fillMesh = new THREE.Mesh(fillGeo, fillMat);
+                fillMesh.rotation.x = -Math.PI / 2;
+                fillMesh.position.set(centerX, 0.012, 0);
+                rampGroup.add(fillMesh);
 
-            bindSlider('inputH', 'H', 'valH');
-            bindSlider('inputR', 'R', 'valR');
-            bindSlider('inputW', 'W', 'valW');
-            bindSlider('inputF', 'F', 'valF');
-            bindSlider('inputD', 'D', 'valD');
-            bindSlider('inputB', 'B', 'valB');
-            bindSlider('inputRollInW', 'rollInW', 'valRollInW');
-            bindSlider('inputRollInL', 'rollInL', 'valRollInL');
+                // Perímetro sólido del patio
+                const pts = [
+                    new THREE.Vector3(centerX - pL / 2, 0.02, -pW / 2),
+                    new THREE.Vector3(centerX + pL / 2, 0.02, -pW / 2),
+                    new THREE.Vector3(centerX + pL / 2, 0.02, pW / 2),
+                    new THREE.Vector3(centerX - pL / 2, 0.02, pW / 2),
+                    new THREE.Vector3(centerX - pL / 2, 0.02, -pW / 2)
+                ];
+                const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+                const lineMat = new THREE.LineBasicMaterial({ color: borderColor });
+                rampGroup.add(new THREE.Line(lineGeo, lineMat));
 
-            document.getElementById('chkRollIn').addEventListener('change', (e) => {
-                state.rollIn = e.target.checked;
-                document.getElementById('rollInControls').classList.toggle('hidden', !state.rollIn);
-                onParamChange();
-            });
+                // Estacas/postes sutiles en las 4 esquinas
+                const postGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.35, 8);
+                const postMat = new THREE.MeshStandardMaterial({ color: borderColor, roughness: 0.5 });
+                [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([sx, sz]) => {
+                    const post = new THREE.Mesh(postGeo, postMat);
+                    post.position.set(centerX + sx * (pL / 2), 0.175, sz * (pW / 2));
+                    rampGroup.add(post);
+                });
 
-            document.getElementById('selectMaterial').addEventListener('change', (e) => {
-                state.material = e.target.value;
-                onParamChange();
-            });
-
-            document.getElementById('selectEnv').addEventListener('change', (e) => {
-                state.env = e.target.value;
-                applyEnvironment();
-                saveState();
-            });
-
-            document.getElementById('chkXray').addEventListener('change', (e) => {
-                state.xray = e.target.checked;
-                rebuild3DModel();
-            });
-
-            document.getElementById('chkRailings').addEventListener('change', (e) => {
-                state.railings = e.target.checked;
-                rebuild3DModel();
-            });
-
-            document.getElementById('chkHuman').addEventListener('change', (e) => {
-                state.human = e.target.checked;
-                rebuild3DModel();
-            });
-        }
-
-        function onParamChange() {
-            saveState();
-            rebuild3DModel();
-        }
-
-        function toggleSidebar() {
-            sidebarOpen = !sidebarOpen;
-            updateSidebarVisibility();
-            setTimeout(onWindowResize, 320);
-        }
-
-        function updateSidebarVisibility() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebarOpen) {
-                sidebar.classList.remove('-translate-x-full', 'md:hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full', 'md:hidden');
+                const statusEl = document.getElementById('patioStatus');
+                if (statusEl) {
+                    if (fits) {
+                        statusEl.className = "text-[11px] bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 rounded-lg px-2.5 py-1.5 font-medium";
+                        statusEl.textContent = `✓ Entra bien: sobran ${freeL.toFixed(2)} m de largo y ${freeW.toFixed(2)} m de ancho.`;
+                    } else {
+                        const msgs = [];
+                        if (freeL < 0) msgs.push(`${Math.abs(freeL).toFixed(2)} m en largo`);
+                        if (freeW < 0) msgs.push(`${Math.abs(freeW).toFixed(2)} m en ancho`);
+                        statusEl.className = "text-[11px] bg-red-950/70 border border-red-500/50 text-red-300 rounded-lg px-2.5 py-1.5 font-medium";
+                        statusEl.textContent = `⚠ Se pasa del patio por ${msgs.join(' y ')}.`;
+                    }
+                }
             }
         }
 
@@ -1360,18 +1444,93 @@
         }
 
         function applyPreset(presetKey) {
-            const p = PRESETS[presetKey];
+            const presets = {
+                micro:    { mode: 'miniramp', H: 45,  R: 150, W: 244, F: 200, D: 60,  B: 10 },
+                standard: { mode: 'miniramp', H: 90,  R: 185, W: 244, F: 260, D: 75,  B: 10 },
+                quarter:  { mode: 'quarter',  H: 75,  R: 170, W: 180, F: 200, D: 60,  B: 8  },
+                halfpipe: { mode: 'miniramp', H: 150, R: 210, W: 366, F: 320, D: 100, B: 12 }
+            };
+            const p = presets[presetKey];
             if (!p) return;
             Object.assign(state, p);
             applyStateToUI();
             syncModeUI(state.mode);
             onParamChange();
             resetCamera();
-            showToast(`Preset "${presetKey}" aplicado.`);
+            showToast("Preset aplicado.");
+        }
+
+        function onParamChange() {
+            saveState();
+            rebuild3DModel();
+        }
+
+        function setupEventListeners() {
+            const bindSlider = (inputId, stateKey, labelId) => {
+                const input = document.getElementById(inputId);
+                const label = document.getElementById(labelId);
+                if (!input) return;
+                input.addEventListener('input', (e) => {
+                    const val = parseInt(e.target.value, 10);
+                    state[stateKey] = val;
+                    if (label) label.textContent = `${val} cm`;
+                    onParamChange();
+                });
+            };
+
+            bindSlider('inputH', 'H', 'valH');
+            bindSlider('inputR', 'R', 'valR');
+            bindSlider('inputW', 'W', 'valW');
+            bindSlider('inputF', 'F', 'valF');
+            bindSlider('inputD', 'D', 'valD');
+            bindSlider('inputB', 'B', 'valB');
+            bindSlider('inputRollInW', 'rollInW', 'valRollInW');
+            bindSlider('inputRollInL', 'rollInL', 'valRollInL');
+            bindSlider('inputPatioL', 'patioL', 'valPatioL');
+            bindSlider('inputPatioW', 'patioW', 'valPatioW');
+
+            document.getElementById('chkRollIn').addEventListener('change', (e) => {
+                state.rollIn = e.target.checked;
+                document.getElementById('rollInControls').classList.toggle('hidden', !state.rollIn);
+                if (!state.rollIn && state.svgTab === 'rollin') state.svgTab = 'curve';
+                onParamChange();
+            });
+
+            document.getElementById('chkPatio').addEventListener('change', (e) => {
+                state.patioEnabled = e.target.checked;
+                document.getElementById('patioControls').classList.toggle('hidden', !state.patioEnabled);
+                onParamChange();
+            });
+
+            document.getElementById('selectMaterial').addEventListener('change', (e) => {
+                state.material = e.target.value;
+                onParamChange();
+            });
+
+            document.getElementById('selectEnv').addEventListener('change', (e) => {
+                state.env = e.target.value;
+                saveState();
+                applyEnvironment();
+            });
+
+            document.getElementById('chkXray').addEventListener('change', (e) => {
+                state.xray = e.target.checked;
+                rebuild3DModel();
+            });
+
+            document.getElementById('chkRailings').addEventListener('change', (e) => {
+                state.railings = e.target.checked;
+                rebuild3DModel();
+            });
+
+            document.getElementById('chkHuman').addEventListener('change', (e) => {
+                state.human = e.target.checked;
+                rebuild3DModel();
+            });
         }
 
         function applyStateToUI() {
-            ['H', 'R', 'W', 'F', 'D', 'B', 'rollInW', 'rollInL'].forEach(k => {
+            ['H', 'R', 'W', 'F', 'D', 'B', 'rollInW', 'rollInL', 'patioL', 'patioW'].forEach(k => {
                 const inputEl = document.getElementById(`input${k}`);
                 const valEl = document.getElementById(`val${k}`);
                 if (inputEl) inputEl.value = state[k];
@@ -1379,6 +1538,8 @@
             });
             document.getElementById('chkRollIn').checked = state.rollIn;
             document.getElementById('rollInControls').classList.toggle('hidden', !state.rollIn);
+            document.getElementById('chkPatio').checked = state.patioEnabled;
+            document.getElementById('patioControls').classList.toggle('hidden', !state.patioEnabled);
             document.getElementById('selectMaterial').value = state.material;
             document.getElementById('selectEnv').value = state.env;
             document.getElementById('chkXray').checked = state.xray;
@@ -1411,11 +1572,44 @@
         // ==========================================
         // 5. PLANO DE CORTE SVG 1:1 + GUÍA DIY
         // ==========================================
+        function setSvgTab(tab) {
+            if (tab === 'rollin' && !state.rollIn) {
+                showToast("Activá el 'Roll-in de Entrada' en el panel para ver su plano.");
+                return;
+            }
+            state.svgTab = tab;
+            renderSVGPlan();
+        }
+
+        function toggleSvgPlyDeduction(checked) {
+            state.svgDeductPly = checked;
+            renderSVGPlan();
+        }
+
         function renderSVGPlan() {
             const container = document.getElementById('svgContainer');
             const fitAlert = document.getElementById('svgFitAlert');
             const fitAlertText = document.getElementById('svgFitAlertText');
             const coordsBody = document.getElementById('diyCoordsBody');
+            const colGround = document.getElementById('diyColGround');
+
+            // Sincronizar pestañas del modal SVG
+            if (!state.rollIn && state.svgTab === 'rollin') state.svgTab = 'curve';
+            const btnCurve = document.getElementById('btnSvgTabCurve');
+            const btnRoll = document.getElementById('btnSvgTabRollIn');
+            const plyWrap = document.getElementById('svgPlyDeductWrap');
+
+            if (state.svgTab === 'curve') {
+                btnCurve.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition";
+                btnRoll.className = state.rollIn
+                    ? "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition"
+                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 cursor-not-allowed";
+                plyWrap.classList.remove('hidden');
+            } else {
+                btnRoll.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500 text-slate-950 transition";
+                btnCurve.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition";
+                plyWrap.classList.add('hidden');
+            }
 
             const H = state.H;
             const R = state.R;
@@ -1427,21 +1621,119 @@
             const projX = Math.sqrt(Math.max(0.01, 2 * R * hClamped - hClamped * hClamped));
             const theta = Math.asin(Math.min(1.0, projX / R));
             const exitAngleDeg = (theta * (180 / Math.PI)).toFixed(1);
-            const arcLengthCm = R * theta;
-            const totalX = projX + D;
+            const boardW = 244;
+            const boardH = 122;
             const totalY = H + B;
 
+            if (state.svgTab === 'rollin') {
+                // --- PLANO DE COSTILLA ROLL-IN (CURVA S) ---
+                const effRollW = Math.min(state.rollInW, Math.max(50, W - 60));
+                const effRollL = Math.max(state.rollInL, projX + 20);
+                const rollArcCm = Math.sqrt(effRollL * effRollL + H * H) * 1.05;
+                const totalX = effRollL + D;
+                const numRibs = Math.max(2, Math.ceil(effRollW / 60) + 1);
+                const joistsCount = Math.max(5, Math.floor(rollArcCm / 22));
+                const maxSlopeDeg = (Math.atan((H * Math.PI) / (2 * effRollL)) * (180 / Math.PI)).toFixed(1);
+
+                document.getElementById('diyArcLength').textContent = `${rollArcCm.toFixed(1)} cm`;
+                document.getElementById('diyTotalX').textContent = `${totalX.toFixed(1)} cm`;
+                document.getElementById('diyRibsCount').textContent = `${numRibs} u.`;
+                document.getElementById('diyJoistsCount').textContent = `${joistsCount} u.`;
+                if (colGround) colGround.textContent = "Altura desde Suelo (Y + B)";
+
+                const exceedsX = totalX > boardW;
+                const exceedsY = totalY > boardH;
+                if (exceedsX || exceedsY) {
+                    const reasons = [];
+                    if (exceedsX) reasons.push(`largo total (${totalX.toFixed(1)} cm > 244 cm)`);
+                    if (exceedsY) reasons.push(`altura total (${totalY.toFixed(1)} cm > 122 cm)`);
+                    fitAlertText.innerHTML = `<strong>Atención (Roll-in):</strong> la costilla supera una placa estándar de 122 × 244 cm en ${reasons.join(' y ')}.`;
+                    fitAlert.classList.remove('hidden');
+                } else {
+                    fitAlert.classList.add('hidden');
+                }
+
+                const maxX = Math.max(boardW, totalX) + 48;
+                const maxY = Math.max(boardH, totalY) + 45;
+                const ox = 18;
+                const oy = maxY - 22;
+                const boardTopY = oy - boardH;
+
+                let pathD = `M ${ox} ${oy} L ${ox} ${oy - B}`;
+                const steps = 40;
+                for (let i = 0; i <= steps; i++) {
+                    const u = i / steps;
+                    const px = ox + u * effRollL;
+                    const py = (oy - B) - H * (0.5 - 0.5 * Math.cos(Math.PI * u));
+                    pathD += ` L ${px.toFixed(2)} ${py.toFixed(2)}`;
+                }
+                const topX = ox + effRollL;
+                const topY = oy - totalY;
+                const deckEndX = ox + totalX;
+                pathD += ` L ${deckEndX.toFixed(2)} ${topY.toFixed(2)} L ${deckEndX.toFixed(2)} ${oy} Z`;
+
+                const strokeColor = (exceedsX || exceedsY) ? '#ef4444' : '#fb923c';
+
+                container.innerHTML = `
+                    <svg id="cutSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${maxX} ${maxY}" class="w-full h-auto max-h-[360px]">
+                        <defs>
+                            <pattern id="grid20" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(56,189,248,0.16)" stroke-width="0.6"/>
+                            </pattern>
+                        </defs>
+                        <rect width="${maxX}" height="${maxY}" fill="#090d16" />
+                        <rect x="${ox}" y="${boardTopY}" width="${boardW}" height="${boardH}" fill="url(#grid20)" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="5,4" />
+                        <text x="${ox + 4}" y="${boardTopY + 9}" fill="#38bdf8" font-size="6.8" font-family="monospace">PLACA ESTÁNDAR 244 × 122 cm (ROLL-IN CURVA S — grilla 20 cm)</text>
+                        <path d="${pathD}" fill="rgba(251, 146, 60, 0.22)" stroke="${strokeColor}" stroke-width="1.8" />
+                        <line x1="${ox}" y1="${oy + 8}" x2="${deckEndX}" y2="${oy + 8}" stroke="#94a3b8" stroke-width="0.9" />
+                        <text x="${(ox + deckEndX) / 2}" y="${oy + 16}" fill="#cbd5e1" font-size="6.5" text-anchor="middle" font-family="monospace">Largo Roll-in: ${totalX.toFixed(1)} cm (Bajada ${effRollL.toFixed(0)} + Deck ${D})</text>
+                        <line x1="${deckEndX + 6}" y1="${oy}" x2="${deckEndX + 6}" y2="${topY}" stroke="#94a3b8" stroke-width="0.9" />
+                        <text x="${deckEndX + 10}" y="${(oy + topY) / 2 + 2}" fill="#cbd5e1" font-size="6.5" text-anchor="start" font-family="monospace">${totalY} cm</text>
+                        <text x="${topX - 4}" y="${topY - 5}" fill="#fb923c" font-size="6.5" font-weight="bold" text-anchor="end" font-family="monospace">Pendiente máx. ${maxSlopeDeg}° | Sin Coping</text>
+                    </svg>
+                `;
+
+                coordsBody.innerHTML = '';
+                const xPoints = [];
+                for (let x = 0; x < effRollL; x += 20) xPoints.push(x);
+                if (xPoints.length === 0 || Math.abs(xPoints[xPoints.length - 1] - effRollL) > 0.5) xPoints.push(effRollL);
+
+                xPoints.forEach((xVal, idx) => {
+                    const u = xVal / effRollL;
+                    const yCurve = H * (0.5 - 0.5 * Math.cos(Math.PI * u));
+                    const yGround = yCurve + B;
+                    const isLast = idx === xPoints.length - 1;
+                    const tr = document.createElement('tr');
+                    tr.className = isLast ? 'bg-orange-500/10 font-semibold' : 'hover:bg-slate-800/40';
+                    tr.innerHTML = `
+                        <td class="p-2">${xVal.toFixed(1)} cm ${isLast ? '<span class="text-[10px] text-orange-400">(Inicio Deck)</span>' : ''}</td>
+                        <td class="p-2">${yCurve.toFixed(1)} cm</td>
+                        <td class="p-2 text-orange-400">${yGround.toFixed(1)} cm</td>
+                    `;
+                    coordsBody.appendChild(tr);
+                });
+
+                initLucideIcons();
+                return;
+            }
+
+            // --- PLANO DE COSTILLA CURVA PRINCIPAL (CON DESCUENTO 18 MM Y MUESCA COPING) ---
+            const arcLengthCm = R * theta;
+            const totalX = projX + D;
             const sides = state.mode === 'miniramp' ? 2 : 1;
             const numRibs = Math.max(2, Math.ceil(W / 70) + 1) * sides;
-            const joistsPerCurve = Math.max(4, Math.floor((arcLengthCm) / 22));
+            const joistsPerCurve = Math.max(4, Math.floor(arcLengthCm / 22));
 
             document.getElementById('diyArcLength').textContent = `${arcLengthCm.toFixed(1)} cm`;
             document.getElementById('diyTotalX').textContent = `${totalX.toFixed(1)} cm`;
             document.getElementById('diyRibsCount').textContent = `${numRibs} u.`;
             document.getElementById('diyJoistsCount').textContent = `${joistsPerCurve * sides} u.`;
+            if (colGround) {
+                colGround.textContent = state.svgDeductPly
+                    ? "Corte Costilla (Y + B - 1.8 cm)"
+                    : "Altura Rodadura (Y + B)";
+            }
 
-            const boardW = 244;
-            const boardH = 122;
             const exceedsX = totalX > boardW;
             const exceedsY = totalY > boardH;
 
@@ -1455,29 +1747,58 @@
                 fitAlert.classList.add('hidden');
             }
 
-            // Escala unificada 1:1 en unidades cm
             const maxX = Math.max(boardW, totalX) + 48;
             const maxY = Math.max(boardH, totalY) + 45;
             const ox = 18;
             const oy = maxY - 22;
 
-            let pathD = `M ${ox} ${oy} L ${ox} ${oy - B}`;
+            // Línea de rodadura nominal (R)
+            let ridingPathD = `M ${ox} ${oy} L ${ox} ${oy - B}`;
             const steps = 36;
             for (let i = 0; i <= steps; i++) {
-                const t = i / steps;
-                const alpha = t * theta;
+                const alpha = (i / steps) * theta;
                 const px = ox + R * Math.sin(alpha);
                 const py = (oy - B) - (R - R * Math.cos(alpha));
-                pathD += ` L ${px.toFixed(2)} ${py.toFixed(2)}`;
+                ridingPathD += ` L ${px.toFixed(2)} ${py.toFixed(2)}`;
             }
-
             const topX = ox + projX;
             const topY = oy - totalY;
             const deckEndX = ox + totalX;
-            pathD += ` L ${deckEndX.toFixed(2)} ${topY.toFixed(2)} L ${deckEndX.toFixed(2)} ${oy} Z`;
+            ridingPathD += ` L ${deckEndX.toFixed(2)} ${topY.toFixed(2)} L ${deckEndX.toFixed(2)} ${oy} Z`;
+
+            // Línea de corte real de costilla descontando 1.8 cm (2 placas de 9 mm)
+            const plyOffset = 1.8;
+            const rCut = R + plyOffset;
+            let cutPathD = `M ${ox} ${oy} L ${ox} ${Math.min(oy, oy - Math.max(0, B - plyOffset))}`;
+            for (let i = 0; i <= steps; i++) {
+                const alpha = (i / steps) * theta;
+                const px = ox + rCut * Math.sin(alpha);
+                const py = (oy - B) - (R - rCut * Math.cos(alpha));
+                cutPathD += ` L ${px.toFixed(2)} ${Math.min(oy, py).toFixed(2)}`;
+            }
+            cutPathD += ` L ${deckEndX.toFixed(2)} ${(topY + plyOffset).toFixed(2)} L ${deckEndX.toFixed(2)} ${oy} Z`;
+
+            // Muesca de caño coping 2" (Ø 5.0 cm, sobresale ~6 mm arriba y al frente)
+            const copingR = 2.5;
+            const copingCx = topX + (copingR - 0.6);
+            const copingCy = topY + (copingR - 0.6);
 
             const boardTopY = oy - boardH;
             const strokeColor = (exceedsX || exceedsY) ? '#ef4444' : '#f97316';
+
+            const copingSvgMarkup = state.svgDeductPly ? `
+                <!-- Línea punteada de rodadura final (+18 mm) -->
+                <path d="${ridingPathD}" fill="none" stroke="#94a3b8" stroke-width="0.9" stroke-dasharray="3,2.5" />
+                <!-- Costilla real a cortar (-18 mm) -->
+                <path d="${cutPathD}" fill="rgba(249, 115, 22, 0.24)" stroke="${strokeColor}" stroke-width="1.8" />
+                <!-- Calado circular (muesca) para caño de coping Ø50 mm -->
+                <circle cx="${copingCx.toFixed(2)}" cy="${copingCy.toFixed(2)}" r="${copingR}" fill="#090d16" stroke="#38bdf8" stroke-width="1.3" />
+                <circle cx="${copingCx.toFixed(2)}" cy="${copingCy.toFixed(2)}" r="0.7" fill="#38bdf8" />
+                <text x="${copingCx + 4.5}" y="${copingCy + 2}" fill="#38bdf8" font-size="5.5" font-family="monospace">Muesca Ø50mm (+6mm)</text>
+            ` : `
+                <path d="${ridingPathD}" fill="rgba(249, 115, 22, 0.22)" stroke="${strokeColor}" stroke-width="1.8" />
+                <circle cx="${topX}" cy="${topY}" r="2.2" fill="#f59e0b" />
+            `;
 
             container.innerHTML = `
                 <svg id="cutSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${maxX} ${maxY}" class="w-full h-auto max-h-[360px]">
@@ -1490,10 +1811,9 @@
 
                     <!-- Placa estándar 244 x 122 cm a escala 1:1 -->
                     <rect x="${ox}" y="${boardTopY}" width="${boardW}" height="${boardH}" fill="url(#grid20)" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="5,4" />
-                    <text x="${ox + 4}" y="${boardTopY + 9}" fill="#38bdf8" font-size="6.8" font-family="monospace">PLACA ESTÁNDAR 244 × 122 cm (grilla = 20 cm)</text>
+                    <text x="${ox + 4}" y="${boardTopY + 9}" fill="#38bdf8" font-size="6.8" font-family="monospace">PLACA ESTÁNDAR 244 × 122 cm (grilla = 20 cm${state.svgDeductPly ? ' | corte -18mm' : ''})</text>
 
-                    <!-- Perfil de la costilla a escala 1:1 -->
-                    <path d="${pathD}" fill="rgba(249, 115, 22, 0.22)" stroke="${strokeColor}" stroke-width="1.8" />
+                    ${copingSvgMarkup}
 
                     <!-- Cota Horizontal -->
                     <line x1="${ox}" y1="${oy + 8}" x2="${deckEndX}" y2="${oy + 8}" stroke="#94a3b8" stroke-width="0.9" />
@@ -1503,8 +1823,6 @@
                     <line x1="${deckEndX + 6}" y1="${oy}" x2="${deckEndX + 6}" y2="${topY}" stroke="#94a3b8" stroke-width="0.9" />
                     <text x="${deckEndX + 10}" y="${(oy + topY) / 2 + 2}" fill="#cbd5e1" font-size="6.5" text-anchor="start" font-family="monospace">${totalY} cm</text>
 
-                    <!-- Punto de Coping -->
-                    <circle cx="${topX}" cy="${topY}" r="2.2" fill="#f59e0b" />
                     <text x="${topX - 4}" y="${topY - 5}" fill="#f59e0b" font-size="6.5" font-weight="bold" text-anchor="end" font-family="monospace">Salida ${exitAngleDeg}° | Arco ${arcLengthCm.toFixed(1)} cm</text>
                 </svg>
             `;
@@ -1519,14 +1837,16 @@
 
             xPoints.forEach((xVal, idx) => {
                 const yCurve = R - Math.sqrt(Math.max(0, R * R - xVal * xVal));
-                const yGround = yCurve + B;
+                const yCut = state.svgDeductPly
+                    ? Math.max(0, B + R - Math.sqrt(Math.max(0, rCut * rCut - xVal * xVal)))
+                    : (yCurve + B);
                 const isLast = idx === xPoints.length - 1;
                 const tr = document.createElement('tr');
                 tr.className = isLast ? 'bg-amber-500/10 font-semibold' : 'hover:bg-slate-800/40';
                 tr.innerHTML = `
                     <td class="p-2">${xVal.toFixed(1)} cm ${isLast ? '<span class="text-[10px] text-amber-400">(Coping)</span>' : ''}</td>
                     <td class="p-2">${yCurve.toFixed(1)} cm</td>
-                    <td class="p-2 text-amber-400">${yGround.toFixed(1)} cm</td>
+                    <td class="p-2 text-amber-400">${yCut.toFixed(1)} cm</td>
                 `;
                 coordsBody.appendChild(tr);
             });
@@ -1541,7 +1861,9 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `plano-costilla-${state.H}x${state.R}cm.svg`;
+            a.download = state.svgTab === 'rollin'
+                ? `plano-rollin-${state.H}x${state.rollInL}cm.svg`
+                : `plano-costilla-${state.H}x${state.R}cm.svg`;
             a.click();
             URL.revokeObjectURL(url);
             showToast("Plano SVG descargado.");
